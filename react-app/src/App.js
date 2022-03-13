@@ -7,7 +7,7 @@ import Solution from './components/Solution';
 
 function App() {
 
-  const [perm, setPerm] = useState([1, 2, 3, 4, 5, 6, 7, 8, 0])
+  const [perm, setPerm] = useState("123456780")
 
   const [goalState, setGoalState] = useState(perm);
 

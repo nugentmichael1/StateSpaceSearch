@@ -5,12 +5,61 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
 
 
     function validateState(type) {
-        let candidateState = (type === "initial") ? document.getElementById("initialState").value : document.getElementById("goalState").value;
-        let size = candidateState.length;
-        let unique = new Set(candidateState)
+
+        //get input state
+        const candidateState = (type === "initial") ? document.getElementById("initialState").value : document.getElementById("goalState").value;
+
+        //check for valid domain (i.e. [0-n))
+        //clean
+        let arr3 = []
+        for (let i = 0; i < candidateState.length; i++) {
+            let asciiVal = candidateState.charCodeAt(i);
+            console.log(asciiVal);
+            if (asciiVal >= 48 && asciiVal <= 57) {
+                //it's a number.  push original
+                arr3.push(asciiVal);
+            }
+            else if (asciiVal >= 65 && asciiVal <= 90) {
+                //it's an uppercase letter.  push ascii number
+                arr3.push(asciiVal)
+            }
+            else if (asciiVal >= 97 && asciiVal <= 122) {
+                //it's a lower case letter.  make upper and push ascii
+                arr3.push(asciiVal - 32)
+            }
+            else {
+                //not a valid character
+            }
+        }
+        arr3.sort();
+
+        let asciiStart = 48;
+        for (let i = 0; i < arr3.length && i < 10; i++) {
+            if (arr3[i] !== asciiStart) {
+                console.log(arr3[i]);
+                console.log(asciiStart);
+                alert("Input " + type + " state lacks value " + String.fromCharCode(asciiStart) + ".");
+                return;
+            }
+            asciiStart += 1;
+        }
+        if (arr3.length >= 11) {
+            asciiStart = 65;
+            for (let i = 0; i < arr3.length && i < 26; i++) {
+                if (arr3[i] !== asciiStart) {
+                    alert("Input " + type + " state lacks value " + String.fromCharCode(asciiStart) + ".");
+                    return;
+                }
+                asciiStart += 1;
+            }
+        }
+
+        //check for uniqueness
+        let unique = new Set(arr3)
+        console.log(unique);
         if (unique.size === candidateState.length) {
 
-            //check for valid range (i.e. )
+
 
             (type === "initial") ?
                 setPerm(candidateState) :
