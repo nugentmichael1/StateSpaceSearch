@@ -1,0 +1,28 @@
+*{
+  text-align: center;
+}
+table.Puzzle{
+  margin: auto auto;
+  font-size: 400%;
+  border-collapse: collapse;
+  text-align: center;
+  background-color: #2e5a88;
+}
+.Puzzle td{
+  text-align: center;
+  border: 1px solid;
+  width: 15vw;
+  height: 15vh;
+}
+
+table.options{
+  margin: auto auto;
+}
+
+table{
+  margin: auto auto;
+}
+
+body{
+  background-color: #003366;
+}
