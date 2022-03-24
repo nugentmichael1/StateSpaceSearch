@@ -1,9 +1,10 @@
 # State Space Search
-CSCI 164
-Artificial Intelligence    
-Spring 2022    
-Professor David Ruby    
-CSU, Fresno    
+Student: Michael Nugent    
+Course Number: CSCI 164    
+Course Name: Artificial Intelligence    
+Term: Spring 2022    
+Course Professor: David Ruby    
+College: CSU, Fresno    
 
 This is a JavaScript implementation of various state space search algorithms within a puzzle slider domain.  Some can be very slow, and essentially hang up your browser.  Be careful.  Below were the provided instructions of the assignment.    
 
