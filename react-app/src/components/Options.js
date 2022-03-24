@@ -49,10 +49,10 @@ const Options = ({ perm, goalState, setPerm, setGoalState, run }) => {
                     </tr>
                     <tr className="algoOption">
                         <td>
-                            <label htmlFor="itDeep">Iterative-Deepening Depth-First Search</label>
+                            <label htmlFor="itDdfs">Iterative-Deepening Depth-First Search</label>
                         </td>
                         <td>
-                            <input type="radio" name="algorithm" value="itDeep" id="itDeep"></input>
+                            <input type="radio" name="algorithm" value="itDdfs" id="itDdfs"></input>
                         </td>
                     </tr>
                     <tr className="algoOption">

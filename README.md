@@ -6,7 +6,9 @@ Term: Spring 2022
 Course Professor: David Ruby    
 College: CSU, Fresno    
 
-This is a JavaScript implementation of various state space search algorithms within a puzzle slider domain.  Some can be very slow, and essentially hang up your browser.  Be careful.  Below were the provided instructions of the assignment.    
+This is a JavaScript implementation of various state space search algorithms within a puzzle slider domain.  JavaScript is about tens times slower than C++, which means this was not the optimal language to program the project.  Some of the algorithms like DFS will cause the browser to hang up with even minorly complex of problems.  
+
+Below were the provided instructions of the assignment.    
 
 
 ## Provided Project Instructions
@@ -35,26 +37,28 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 - Provide overview of your code.
 - Provide results for the following problems:
 
-"160273485"    
-"462301587"    
-"821574360"    
-"840156372"    
-"530478126"    
-"068314257"    
-"453207186"    
-"128307645"    
-"035684712"    
-"684317025"    
-"028514637"    
-"618273540"    
-"042385671"    
-"420385716"    
-"054672813"    
-"314572680"    
-"637218045"    
-"430621875"    
-"158274036"    
-"130458726"   
+Start State | Solution String
+--- | --- 
+"160273485" | DDLUURDLLDRRUULDRD
+"462301587" | RDLURULLDRDLURULDRRULDDR
+"821574360"|
+"840156372"|
+"530478126"|
+"068314257"|
+"453207186"|
+"128307645"|
+"035684712"|
+"684317025"|
+"028514637"|
+"618273540"|
+"042385671"|
+"420385716"|
+"054672813"|
+"314572680"|
+"637218045"|
+"430621875"|
+"158274036"|
+"130458726"|
 
 
 EASY:    

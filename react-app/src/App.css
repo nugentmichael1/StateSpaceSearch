@@ -31,3 +31,7 @@ body{
 tr.algoOption{
   background-color: #2e5a88;
 }
+
+table.options{
+  background-color: cyan;
+}

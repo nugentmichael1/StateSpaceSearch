@@ -2,10 +2,12 @@ class state {
     perm;
     parent;
     movement;
-    constructor(perm, parent, movement) {
+    level;
+    constructor(perm, parent, movement, level) {
         this.perm = perm;
         this.parent = parent;
         this.movement = movement;
+        this.level = level;
     }
 
 }
@@ -15,13 +17,24 @@ class search {
     frontier = []
     expandCount = 0;
     constructor(start, goal) {
-        this.start = new state(start, undefined, undefined);
+
+        //create state object from start state permutation
+        this.start = new state(start, undefined, undefined, 0);
+
+        //set current state to start state
         this.curState = this.start;
         this.goal = goal;
+
+        //record that start state has been seen
         this.reached.push(this.start);
-        this.frontier.push(this.start);
+
+        // this.frontier.push(this.start);
+
+
         //might need to take floor of this
         this.dimension = Math.sqrt(this.start.perm.length);
+
+
         console.log("search called");
 
         //verify start and goal states are in a valid format
@@ -44,18 +57,26 @@ class search {
         //call appropriate search algorithm
         if (algo === "bfs") this.bfs();
         else if (algo === "dfs") this.dfs();
+        else if (algo === "itDdfs") this.itDdfs();
 
         console.log("Reached goal state: ", this.curState);
 
         console.log("expandedCount", this.expandCount);
-        console.log(this.traceBack());
+        this.traceBack();
+        console.log(this.solution);
+        console.log("frontierSize", this.frontier.length)
+        console.log("reached size", this.reached.length);
 
     }
 
     traceBack() {
         //current state should be at goal state when this function is called
+
         let solution = [this.curState.movement];
         let cur = this.curState.parent;
+
+        //case where start state is goal state
+        if (!cur) return solution.join("");
 
         while (cur.parent != undefined) {
             // console.log(cur.movement)
@@ -66,18 +87,19 @@ class search {
         //reverse the solution string
         solution = solution.reverse();
 
+        //store solution
         this.solution = solution.join("");
     }
 
     //breadth first search
     bfs() {
-
         while (true) {
             // check to see if in goal state
             if (this.curState.perm === this.goal) {
-                //add to this later
                 return;
             }
+
+            // console.log("frontier", this.frontier);
 
             // else expand current state
             // console.log('expand')
@@ -85,14 +107,67 @@ class search {
 
             this.curState = this.frontier.shift();
             // console.log("curState after expand()", this.curState);
-
         }
+    }
 
+    dfs() {
+        while (true) {
+            //check to see if in goal state
+            if (this.curState.perm === this.goal) {
+                return;
+            }
+
+            // console.log("dfs,reached",this.reached);
+            // console.log("dfs,frontier",this.frontier);
+            // console.log("dfs,curState",this.curState);
+            this.expand();
+
+            this.curState = this.frontier.pop();
+        }
+    }
+
+    itDdfs() {
+
+        let depthBound = 1;
+
+        while (true) {
+            //check to see if in goal state
+            if (this.curState.perm === this.goal) {
+                return;
+            }
+
+            // console.log("itDdfs,reached",this.reached);
+            // console.log("itDdfs,frontier",this.frontier);
+            // console.log("itDdfs,curState",this.curState);
+
+            //expand current state
+            this.expand();
+
+            this.curState = this.frontier.pop();
+
+            //reject nodes that are beyond the depth boundary
+            while (this.curState.level >= depthBound && this.frontier.length !== 0) {
+
+                this.curState = this.frontier.pop();
+            }
+            if (this.frontier.length === 0) {
+                //increment depth boundary by 1 and reset everything
+                depthBound += 1;
+
+                //should clear reached array of all but the start state
+                this.reached = [this.start];
+
+                this.frontier = []; //technically this is already empty at this point.
+
+                this.curState = this.start;
+            }
+        }
 
     }
 
     expand() {
         this.expandCount += 1;
+        // console.log("expand()",this.curState);
 
         //order: up, down, left, right
 
@@ -164,12 +239,13 @@ class search {
         // console.log("newState", newStateStr);
 
         //search reached container for new state
-        if (!this.reached.find(s => s.permStr === newStateStr)) {
+        if (!this.reached.find(s => s.perm === newStateStr)) {
             // console.log("new state not found in reached.  adding it to reached and frontier.")
             //add new state to reached and frontier
-            let s = new state(newStateStr, this.curState, movement);
+            let s = new state(newStateStr, this.curState, movement, this.curState.level + 1);
             this.reached.push(s);
             this.frontier.push(s);
+            // console.log("newState", s);
         }
     }
 
@@ -219,9 +295,9 @@ class search {
             }
             asciiStart += 1;
         }
-        if (arr3.length >= 11) {
+        if (arr3.length >= 10) {
             asciiStart = 65;
-            for (let i = 0; i < arr3.length && i < 26; i++) {
+            for (let i = 10; i < arr3.length && i < 26; i++) {
                 if (arr3[i] !== asciiStart) {
                     alert("Input " + type + " state lacks value " + String.fromCharCode(asciiStart) + ".");
                     return false;
@@ -235,11 +311,11 @@ class search {
         // console.log(unique);
         if (unique.size === candidateState.length) {
 
-            /*
-                        (type === "initial") ?
-                            setPerm(candidateState) :
-                            setGoalState(candidateState);
-            */
+
+            // (type === "initial") ?
+            //     setPerm(candidateState) :
+            //     setGoalState(candidateState);
+
             return true;
         }
         else {
