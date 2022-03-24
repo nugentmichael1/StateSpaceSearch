@@ -1,9 +1,14 @@
 # State Space Search
-CSCI164 Project - 8 &amp; 15 Puzzles    
+CSCI 164
+Artificial Intelligence    
 Spring 2022    
-CSU, Fresno
+Professor David Ruby    
+CSU, Fresno    
 
-## Project Instructions
+This is a JavaScript implementation of various state space search algorithms within a puzzle slider domain.  Some can be very slow, and essentially hang up your browser.  Be careful.  Below were the provided instructions of the assignment.    
+
+
+## Provided Project Instructions
 In this assignment you will explore State-Space Search with the 8-Puzzle and 15-Puzzle.  You will need to implement and provide code for the following algorithms:
 
 - Breadth-First Search    
