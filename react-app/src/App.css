@@ -6,7 +6,7 @@ table.Puzzle{
   font-size: 400%;
   border-collapse: collapse;
   text-align: center;
-  background-color: #2e5a88;
+  background-color: #1b4470;
 }
 .Puzzle td{
   text-align: center;
@@ -21,8 +21,13 @@ table.options{
 
 table{
   margin: auto auto;
+  border-collapse: collapse;
 }
 
 body{
   background-color: #003366;
+}
+
+tr.algoOption{
+  background-color: #2e5a88;
 }

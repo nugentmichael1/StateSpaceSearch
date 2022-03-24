@@ -1,75 +1,6 @@
 
+const Options = ({ perm, goalState, setPerm, setGoalState, run }) => {
 
-
-const Options = ({ perm, goalState, setPerm, setGoalState }) => {
-
-
-    function validateState(type) {
-
-        //get input state
-        const candidateState = (type === "initial") ? document.getElementById("initialState").value : document.getElementById("goalState").value;
-
-        //check for valid domain (i.e. [0-n))
-        //clean
-        let arr3 = []
-        for (let i = 0; i < candidateState.length; i++) {
-            let asciiVal = candidateState.charCodeAt(i);
-            console.log(asciiVal);
-            if (asciiVal >= 48 && asciiVal <= 57) {
-                //it's a number.  push original
-                arr3.push(asciiVal);
-            }
-            else if (asciiVal >= 65 && asciiVal <= 90) {
-                //it's an uppercase letter.  push ascii number
-                arr3.push(asciiVal)
-            }
-            else if (asciiVal >= 97 && asciiVal <= 122) {
-                //it's a lower case letter.  make upper and push ascii
-                arr3.push(asciiVal - 32)
-            }
-            else {
-                //not a valid character
-            }
-        }
-        arr3.sort();
-
-        let asciiStart = 48;
-        for (let i = 0; i < arr3.length && i < 10; i++) {
-            if (arr3[i] !== asciiStart) {
-                console.log(arr3[i]);
-                console.log(asciiStart);
-                alert("Input " + type + " state lacks value " + String.fromCharCode(asciiStart) + ".");
-                return;
-            }
-            asciiStart += 1;
-        }
-        if (arr3.length >= 11) {
-            asciiStart = 65;
-            for (let i = 0; i < arr3.length && i < 26; i++) {
-                if (arr3[i] !== asciiStart) {
-                    alert("Input " + type + " state lacks value " + String.fromCharCode(asciiStart) + ".");
-                    return;
-                }
-                asciiStart += 1;
-            }
-        }
-
-        //check for uniqueness
-        let unique = new Set(arr3)
-        console.log(unique);
-        if (unique.size === candidateState.length) {
-
-
-
-            (type === "initial") ?
-                setPerm(candidateState) :
-                setGoalState(candidateState);
-        }
-        else {
-            alert("Input values of " + type + " state are not unique.")
-            return false;
-        }
-    }
 
     return (
         <>
@@ -82,7 +13,10 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                         </td>
                         <td>
                             <input type="text" id="initialState" value={perm}
-                                onChange={() => validateState("initial")}></input>
+                                onChange={() => setPerm(document.getElementById('initialState').value)}></input>
+                        </td>
+                        <td rowSpan={2}>
+                            <input type="button" onClick={run} value="Run"></input>
                         </td>
                     </tr>
                     <tr>
@@ -91,10 +25,10 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                         </td>
                         <td>
                             <input type="text" id="goalState" value={goalState}
-                                onChange={() => validateState("goal")}></input>
+                                onChange={() => setGoalState(document.getElementById("goalState").value)}></input>
                         </td>
                     </tr>
-                    <tr>
+                    <tr className="algoOption">
                         <td rowSpan="5">
                             Algorithm
                         </td>
@@ -105,7 +39,7 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                             <input type="radio" name="algorithm" value="bfs" id="bfs"></input>
                         </td>
                     </tr>
-                    <tr>
+                    <tr className="algoOption">
                         <td>
                             <label htmlFor="dfs">Depth-First Search</label>
                         </td>
@@ -113,7 +47,7 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                             <input type="radio" name="algorithm" value="dfs" id="dfs"></input>
                         </td>
                     </tr>
-                    <tr>
+                    <tr className="algoOption">
                         <td>
                             <label htmlFor="itDeep">Iterative-Deepening Depth-First Search</label>
                         </td>
@@ -121,7 +55,7 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                             <input type="radio" name="algorithm" value="itDeep" id="itDeep"></input>
                         </td>
                     </tr>
-                    <tr>
+                    <tr className="algoOption">
                         <td>
                             <label htmlFor="aStar">               A* with a Heuristic
                             </label>
@@ -130,7 +64,7 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                             <input type="radio" name="algorithm" value="aStar" id="aStar"></input>
                         </td>
                     </tr>
-                    <tr>
+                    <tr className="algoOption">
                         <td>
                             <label htmlFor="iDH">               Iterative Deepening A* with a Heuristic
                             </label>
@@ -139,7 +73,7 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                             <input type="radio" name="algorithm" value="iDH" id="iDH"></input>
                         </td>
                     </tr>
-                    <tr >
+                    <tr className="huerOption">
                         <td rowSpan="2">
                             Hueristic
                         </td>
@@ -150,7 +84,7 @@ const Options = ({ perm, goalState, setPerm, setGoalState }) => {
                             <input type="radio" name="heuristic" value="oop" id="oop"></input>
                         </td>
                     </tr>
-                    <tr>
+                    <tr className="huerOption">
                         <td>
                             <label htmlFor="man">Manhattan Distance</label>
                         </td>

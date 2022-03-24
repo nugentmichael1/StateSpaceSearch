@@ -21,7 +21,7 @@ const PuzzleRow = ({ perm, row, swap }) => {
 
 const Puzzle = ({ perm, swap}) => {
 
-    console.log(perm);
+    // console.log(perm);
 
     let pSize = perm.length;
 

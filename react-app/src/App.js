@@ -4,6 +4,8 @@ import Options from './components/Options';
 import { useState } from 'react';
 import { legalMove } from './Engine/Mechanics'
 import Solution from './components/Solution';
+import search from './Engine/Search'
+
 
 function App() {
 
@@ -17,7 +19,7 @@ function App() {
 
   const swap = (candidate) => {
 
-    console.log(perm);
+    // console.log(perm);
 
     let zeroIndex = perm.indexOf(0);
     let candidateIndex = perm.indexOf(candidate);
@@ -26,16 +28,22 @@ function App() {
       let tmp = [...perm];
       tmp[zeroIndex] = perm[candidateIndex];
       tmp[candidateIndex] = 0;
-      setPerm(tmp);
+      // console.log("swap",tmp);
+      // console.log("swapPerm",perm)
+      setPerm(tmp.join(""));
     }
+  }
 
-
+  function run() {
+    let s = new search(perm, goalState);
+    setENodes(s.expandCount);
+    setSolution(s.solution);
   }
 
   return (
     <>
       <h1>State Space Search</h1>
-      <Options perm={perm} goalState={goalState} setPerm={setPerm} setGoalState={setGoalState}/>
+      <Options perm={perm} goalState={goalState} setPerm={setPerm} setGoalState={setGoalState} run={run} />
       <Puzzle perm={perm} setPerm={setPerm} swap={swap} />
       <Solution solution={solution} eNodes={eNodes} />
     </>
