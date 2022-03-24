@@ -1,6 +1,7 @@
-# StateSpaceSearch
-CSCI164 Project - 8 &amp; 15 Puzzles
-Spring 2022
+# State Space Search
+CSCI164 Project - 8 &amp; 15 Puzzles    
+Spring 2022    
+CSU, Fresno
 
 ## Project Instructions
 In this assignment you will explore State-Space Search with the 8-Puzzle and 15-Puzzle.  You will need to implement and provide code for the following algorithms:
@@ -13,20 +14,20 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 
 ### Develop search code with requirements:
 
--Input puzzle as a two strings, initial state and goal state.    
--Produce the solution as a string of "udlr" representing the move "up", "down", "left", and "right" for the movement of the blank.    
--Produce the number of expanded nodes required to find solution.    
+- Input puzzle as a two strings, initial state and goal state.    
+- Produce the solution as a string of "udlr" representing the move "up", "down", "left", and "right" for the movement of the blank.    
+- Produce the number of expanded nodes required to find solution.    
 
 ### In addition, develop code to test a solution with requirements:
 
-    Input initial puzzle state as string.
-    Input move sequence as string.
-    Produce output state from applying move sequence to initial state.
+- Input initial puzzle state as string.
+- Input move sequence as string.
+- Produce output state from applying move sequence to initial state.
 
 ### Provide link to Github repository with all code, and submit final report as PDF with requirements:
 
-    Provide overview of your code.
-    Provide results for the following problems:
+- Provide overview of your code.
+- Provide results for the following problems:
 
 "160273485"    
 "462301587"    
@@ -50,18 +51,18 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 "130458726"   
 
 
-EASY:
-"16235A749C08DEBF" 
-"0634217859ABDEFC" 
-"012456379BC8DAEF" 
-"51246A38097BDEFC" 
-"12345678D9CFEBA0"
+EASY:    
+"16235A749C08DEBF"    
+"0634217859ABDEFC"    
+"012456379BC8DAEF"    
+"51246A38097BDEFC"    
+"12345678D9CFEBA0"   
 
-DIFFICULT:
-"71A92CE03DB4658F" 
-"02348697DF5A1EBC" 
-"39A1D0EC7BF86452" 
-"EAB480FC19D56237" 
-"7DB13C52F46E80A9"
+DIFFICULT:    
+"71A92CE03DB4658F"    
+"02348697DF5A1EBC"    
+"39A1D0EC7BF86452"    
+"EAB480FC19D56237"    
+"7DB13C52F46E80A9"   
 
 You can work in groups, but each person needs to submit assignment, and assignment report should list all team member names.  Groups are generally limited to 5.
