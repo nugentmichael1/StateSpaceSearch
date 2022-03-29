@@ -1,5 +1,16 @@
 /*  State Space Search
+Author/Student: Michael Nugent
+Course: CSCI 164 - Artificial Intelligence
+Professor: David Ruby
+Semester: Spring 2022
+School: CSU, Fresno
 
+Program Description: This is a C++ implementation of State Space Search algorithms within a Tile Slider Puzzle domain (8, and 15).  The implemented algorithms are three basics: breadth first search (bfs), depth first search (dfs), and iterative deepening dfs; and two advanced: A* with hueristics, and iterative deepening dfs with hueristics.  
+
+Compile: g++ main.cpp -o main.o
+Run: ./main.o <start state> <goal state> <algorithm>
+Run example: ./main.o "123450786" "123456780" "bfs"
+Run default: If no parameters are provided, a set of default states and algorithm are used, which can be modified within the driver (main function) of main.cpp.
 */
 
 #include <fstream>   //read batch sequences or start states
@@ -635,9 +646,8 @@ public:
 
 int main(int argc, char *argv[])
 {
-
-    string goalState;
     string startState;
+    string goalState;
     string algo;
 
     if (argc > 3)
@@ -648,14 +658,16 @@ int main(int argc, char *argv[])
     }
     else
     {
-        goalState = "123456780";
-
         // startState = "160273485";
-        startState = "120345786";
+        // startState = "120345786";
         // startState = "203145786";
         // startState = "123405786";
         // startState = "462301587";
         // startState = "821574360";
+        startState = "840156372";
+
+        goalState = "123456780";
+        // goalState = "123456789ABCDEF0";
 
         algo = "bfs";
     }
@@ -666,7 +678,9 @@ int main(int argc, char *argv[])
     test t1(startState, solution);
     string outputState = t1.outputState();
     cout << "-- Solution Test --\nOutput State: " << outputState << "\n";
-    if(outputState == goalState) cout << "is equal to\n";
-    else cout << "is not equal to\n";
-    cout <<  "Goal State:   " << goalState << "\n";
+    if (outputState == goalState)
+        cout << "is equal to\n";
+    else
+        cout << "is not equal to\n";
+    cout << "Goal State:   " << goalState << "\n";
 }

@@ -63,11 +63,11 @@ Start State | Solution String | Algorithm
 15 Puzzle - Easy   
 Start State | Solution String | Algorithm
 --- | --- | ---
-"16235A749C08DEBF"|
-"0634217859ABDEFC"    
-"012456379BC8DAEF"    
-"51246A38097BDEFC"    
-"12345678D9CFEBA0"   
+"16235A749C08DEBF"|LUURRDDLDR|Iterative Deepening DFS
+"0634217859ABDEFC"|RDLURDLDRRRD|Iterative Deepening DFS
+"012456379BC8DAEF"|RRDRDLLDRR|Iterative Deepening DFS
+"51246A38097BDEFC"|RULURRDDRD|Iterative Deepening DFS
+"12345678D9CFEBA0"|LURDLURDLLLURRDR|Iterative Deepening DFS
 
 15 Puzzle - Difficult
 Start State | Solution String | Algorithm
