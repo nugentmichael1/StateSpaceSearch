@@ -14,28 +14,28 @@ Below were the provided instructions of the assignment.
 ## Provided Project Instructions
 In this assignment you will explore State-Space Search with the 8-Puzzle and 15-Puzzle.  You will need to implement and provide code for the following algorithms:
 
-- Breadth-First Search    
-- Depth-First Search    
-- Iterative-Deepening Depth-First Search    
-- A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
-- Iterative Deepening A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
+- [x] Breadth-First Search    
+- [x] Depth-First Search    
+- [x] Iterative-Deepening Depth-First Search    
+- [ ] A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
+- [ ] Iterative Deepening A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
 
 ### Develop search code with requirements:
 
-- Input puzzle as a two strings, initial state and goal state.    
-- Produce the solution as a string of "udlr" representing the move "up", "down", "left", and "right" for the movement of the blank.    
-- Produce the number of expanded nodes required to find solution.    
+- [x] Input puzzle as a two strings, initial state and goal state.    
+- [x] Produce the solution as a string of "udlr" representing the move "up", "down", "left", and "right" for the movement of the blank.    
+- [x] Produce the number of expanded nodes required to find solution.    
 
 ### In addition, develop code to test a solution with requirements:
 
-- Input initial puzzle state as string.
-- Input move sequence as string.
-- Produce output state from applying move sequence to initial state.
+- [x] Input initial puzzle state as string.
+- [x] Input move sequence as string.
+- [x] Produce output state from applying move sequence to initial state.
 
 ### Provide link to Github repository with all code, and submit final report as PDF with requirements:
 
-- Provide overview of your code.
-- Provide results for the following problems:
+- [ ] Provide overview of your code.
+- [ ] Provide results for the following problems:
 
 Start State | Solution String | Algorithm
 --- | --- | --- 
@@ -60,15 +60,18 @@ Start State | Solution String | Algorithm
 "158274036"|
 "130458726"|
 
-
-EASY:    
-"16235A749C08DEBF"    
+15 Puzzle - Easy   
+Start State | Solution String | Algorithm
+--- | --- | ---
+"16235A749C08DEBF"|
 "0634217859ABDEFC"    
 "012456379BC8DAEF"    
 "51246A38097BDEFC"    
 "12345678D9CFEBA0"   
 
-DIFFICULT:    
+15 Puzzle - Difficult
+Start State | Solution String | Algorithm
+--- | --- | ---
 "71A92CE03DB4658F"    
 "02348697DF5A1EBC"    
 "39A1D0EC7BF86452"    
