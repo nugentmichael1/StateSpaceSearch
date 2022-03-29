@@ -38,7 +38,7 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 - Provide results for the following problems:
 
 Start State | Solution String | Algorithm
---- | --- 
+--- | --- | --- 
 "160273485" | DDLUURDLLDRRUULDRD
 "462301587" | RDLURULLDRDLURULDRRULDDR
 "821574360"| LLURULDRDRULURDLLURDDRULLDRULDRR
