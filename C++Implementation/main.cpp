@@ -25,7 +25,7 @@ struct state
     state(string perm, state *parent, char movement, int level) : perm(perm), parent(parent), movement(movement), level(level) {}
     void print()
     {
-        cout << "-- State -- perm: " << perm << ";parent: " << parent << "; movement: " << movement << "; level: " << level << "\n";
+        cout << "-- State -- perm: " << perm << "; parent: " << parent << "; movement: " << movement << "; level: " << level << "\n";
     }
 };
 
@@ -61,8 +61,8 @@ public:
             state *s = this->q.front();
             this->q.pop();
             // debug:
-            cout << "pop() return state print(): \n";
-            s->print();
+            // cout << "pop() return state print(): \n";
+            // s->print();
             return s;
         }
         else if (this->type == "stack")
@@ -107,236 +107,17 @@ class SSsearch
     vector<state *> reached;
     // vector<state> frontier;
     frontier f;
-    int expandCount = 0;
+    unsigned int expandCount = 0;
     state *start;
     state *curState;
     string goalPerm;
     int dimension;   // usually 3 or 4.
     string solution; // sequence of movements.
 
-public:
-    SSsearch(string start, string goal, string algo) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start)
-    {
-
-        // create state object from start state permutation
-        // this->start = state(start, NULL, NULL, 0);
-
-        // set current state to start state
-        // this->curState = this->start;
-
-        // set goal permutation
-        // this->goalPerm = goal;
-
-        // record that start state has been seen
-        this->reached.emplace_back(this->start);
-
-        // this.frontier.push(this.start);
-
-        // might need to take floor of this
-        this->dimension = sqrt(this->start->perm.length());
-
-        cout << "search called\n";
-
-        // verify start and goal states are in a valid format
-        if (!this->validateInput("start"))
-            return;
-        if (!this->validateInput("goal"))
-            return;
-
-        // debug:
-        cout << "made it past valideInput() checks\n";
-
-        // check start and goal are of same length
-        if (this->start->perm.length() != this->goalPerm.length())
-            return;
-
-        // debug:
-        cout << "Start state and goal states are the same length\n";
-
-        // call appropriate search algorithm
-        if (algo == "bfs")
-            this->bfs();
-        else if (algo == "dfs")
-            this->dfs();
-        else if (algo == "itDdfs")
-            this->itDdfs();
-
-        cout << "Reached goal state: " << this->curState->perm << "\n";
-
-        cout << "expandedCount: " << this->expandCount << "\n";
-
-        this->traceBack();
-
-        cout << "Solution: " << this->solution << "\n";
-        cout << "Frontier Size: " << this->f.size() << "\n";
-        cout << "Reached Size: " << this->reached.size() << "\n";
-    }
-
-    string getSolution()
-    {
-        return this->solution;
-    }
-
-    void traceBack()
-    {
-
-        // debug:
-        cout << "Inside traceBack()\n";
-        cout << "this->curState->print()--\n";
-        this->curState->print();
-        // current state should be at goal state when this function is called
-        this->solution = string(1, this->curState->movement);
-        state *cur = this->curState->parent;
-
-        // case where start state is goal state
-        if (!cur)
-            return;
-
-        // debug:
-        // int i = 0;
-
-        // while (cur->parent != NULL && i < 10)
-        while (cur->parent != NULL)
-        {
-            // debug
-            cout << "While Loop: cur\n";
-            cur->print();
-
-            // debug: track movement sequence generation
-            cout << "cur->movement: " << cur->movement << "\n";
-            this->solution += cur->movement;
-            cur = cur->parent;
-            // debug:
-            // i++;
-        }
-
-        // reverse the solution string
-        reverse(this->solution.begin(), this->solution.end());
-    }
-
-    // breadth first search
-    void bfs()
-    {
-        // debug:
-        cout << "Inside bfs()\n";
-
-        this->f = frontier("queue");
-
-        while (true)
-        {
-            // debug:
-            cout << "About to check for goal state\n";
-            // check to see if in goal state
-            cout << "curState->perm == this->goalPerm : " << this->curState->perm << " == " << this->goalPerm << "\n";
-            if (this->curState->perm == this->goalPerm)
-            {
-                return;
-            }
-
-            // debug
-            cout << "Inside while loop of bfs()\n";
-
-            // console.log("frontier", this.frontier);
-
-            // else expand current state
-            // console.log('expand')
-            this->expand();
-
-            cout << "Finished expand()\n";
-            cout << "frontier size: " << f.size() << "\n";
-            this->curState = this->f.pop();
-
-            // debug: check curState
-            cout << "curState from latest f.pop()\n";
-            this->curState->print();
-        }
-        // debug:
-        cout << "Left while loop of bfs()\n";
-    }
-
-    void dfs()
-    {
-        this->f = frontier("stack");
-        while (true)
-        {
-            // check to see if in goal state
-            if (this->curState->perm == this->goalPerm)
-            {
-                return;
-            }
-
-            // console.log("dfs,reached",this.reached);
-            // console.log("dfs,frontier",this.frontier);
-            // console.log("dfs,curState",this.curState);
-            this->expand();
-
-            this->curState = this->f.pop();
-        }
-    }
-
-    void itDdfs()
-    {
-
-        int depthBound = 1;
-
-        this->f = frontier("stack");
-
-        while (true)
-        {
-            // debug
-            // cout << "curState->perm == this->goalPerm : " << this->curState->perm << " == " << this->goalPerm << "\n";
-
-            // check to see if in goal state
-            if (this->curState->perm == this->goalPerm)
-            {
-                return;
-            }
-
-            // check curState for appropriate depth before expansion.
-            if (this->curState->level < depthBound)
-            { // expand current state
-                this->expand();
-            }
-
-            // ensure frontier has states
-            if (this->f.size() == 0)
-            {
-
-                //  increment depth boundary by 1 and reset everything
-                depthBound += 1;
-
-                // debug:
-                cout << "Increased depth boundary to: " << depthBound << "\n";
-
-                // debug: limit depth for analysis purposes
-                //  if (depthBound > 10)
-                //      return;
-
-                // should clear reached array of all but the start state
-                this->reached = vector<state *>(1, this->start);
-
-                this->f = frontier("stack"); // technically this was already empty by this point.
-
-                this->curState = this->start;
-            }
-            else
-            {
-                this->curState = this->f.pop();
-            }
-
-            // reject nodes that are beyond the depth boundary
-            // while (this->curState->level >= depthBound && this->f.size() != 0)
-            // {
-
-            //     this->curState = this->f.pop();
-            // }
-        }
-    }
-
+    // opens up possible new states from current state, and adds to frontier if not seen before
     void expand()
     {
         this->expandCount += 1;
-        // console.log("expand()",this.curState);
 
         // order: up, down, left, right
 
@@ -350,8 +131,6 @@ public:
         int zeroRow = floor(zeroIndex / this->dimension);
         int zeroCol = zeroIndex % this->dimension;
 
-        // console.log("zeroRow", zeroRow)
-        // console.log("dimension", this.dimension)
         // up & down
         if (zeroRow > 0)
         {
@@ -392,8 +171,9 @@ public:
             // check right
 
             // debug:
-            cout << "check right: curState \n";
-            this->curState->print();
+            // cout << "check right: curState \n";
+            // this->curState->print();
+
             // find swap target's index
             int swapTargetIndex = zeroIndex + 1;
 
@@ -405,6 +185,7 @@ public:
         // console.log("frontier", this.frontier)
     }
 
+    // utility function to clean up expand()
     void checkReachedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
     {
 
@@ -433,9 +214,13 @@ public:
             // cout << "New State pushed\n";
             // s->print();
         }
+        // debug: ensure reached states are disregarded
+        //  else{
+        //      cout << "Found state in reached.  Skip.\n";
+        //  }
     }
 
-    // ensure input states are composed of sequential and unique character
+    // ensure input states are composed of sequential and unique characters
     bool validateInput(string type)
     {
 
@@ -518,6 +303,214 @@ public:
         {
             cout << "Input values of " << type << " state are not unique.\n";
             return false;
+        }
+    }
+
+    // called once an algorithm is run.  builds and returns move sequence from start to goal.
+    void traceBack()
+    {
+
+        // debug:
+        // cout << "Inside traceBack()\n";
+        // cout << "this->curState->print()--\n";
+        this->curState->print();
+
+        // current state should be at goal state when this function is called
+        this->solution = string(1, this->curState->movement);
+        state *cur = this->curState->parent;
+
+        // case where start state is goal state
+        if (!cur)
+            return;
+
+        // debug:
+        // int i = 0;
+
+        // while (cur->parent != NULL && i < 10)
+        while (cur->parent != NULL)
+        {
+            // debug
+            // cout << "While Loop: cur\n";
+            cur->print();
+
+            // debug: track movement sequence generation
+            // cout << "cur->movement: " << cur->movement << "\n";
+            this->solution += cur->movement;
+            cur = cur->parent;
+            // debug:
+            // i++;
+        }
+
+        // reverse the solution string
+        reverse(this->solution.begin(), this->solution.end());
+    }
+
+public:
+    SSsearch(string start, string goal, string algo) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start)
+    {
+
+        // record that start state has been seen
+        this->reached.emplace_back(this->start);
+
+        // this.frontier.push(this.start);
+
+        // might need to take floor of this
+        this->dimension = sqrt(this->start->perm.length());
+
+        cout << "search called\n";
+
+        // verify start and goal states are in a valid format
+        if (!this->validateInput("start"))
+            return;
+        if (!this->validateInput("goal"))
+            return;
+
+        // debug:
+        // cout << "made it past valideInput() checks\n";
+
+        // check start and goal are of same length
+        if (this->start->perm.length() != this->goalPerm.length())
+            return;
+
+        // debug:
+        // cout << "Start state and goal states are the same length\n";
+
+        // call appropriate search algorithm
+        if (algo == "bfs")
+            this->bfs();
+        else if (algo == "dfs")
+            this->dfs();
+        else if (algo == "itDdfs")
+            this->itDdfs();
+        else
+            cout << "algorithm paramter string not recognized.\n";
+
+        cout
+            << "Reached goal state: " << this->curState->perm << "\n";
+
+        this->traceBack();
+
+        cout << "Expanded Count: " << this->expandCount << "\n";
+        cout << "Solution: " << this->solution << "\n";
+        cout << "Frontier Size: " << this->f.size() << "\n";
+        cout << "Reached Size: " << this->reached.size() << "\n";
+    }
+
+    // returns solution (move sequence)
+    string getSolution()
+    {
+        return this->solution;
+    }
+
+    // breadth first search
+    void bfs()
+    {
+        // debug:
+        // cout << "Inside bfs()\n";
+
+        this->f = frontier("queue");
+
+        while (true)
+        {
+            // debug:
+            // cout << "About to check for goal state\n";
+            // check to see if in goal state
+            // cout << "curState->perm == this->goalPerm : " << this->curState->perm << " == " << this->goalPerm << "\n";
+            if (this->curState->perm == this->goalPerm)
+            {
+                return;
+            }
+
+            // debug
+            // cout << "Inside while loop of bfs()\n";
+
+            // console.log("frontier", this.frontier);
+
+            // else expand current state
+            // console.log('expand')
+            this->expand();
+
+            // debug
+            //  cout << "Finished expand()\n";
+            //  cout << "frontier size: " << f.size() << "\n";
+            this->curState = this->f.pop();
+
+            // debug: check curState
+            // cout << "curState from latest f.pop()\n";
+            // this->curState->print();
+        }
+        // debug:
+        // cout << "Left while loop of bfs()\n";
+    }
+
+    // depth first search
+    void dfs()
+    {
+        this->f = frontier("stack");
+        while (true)
+        {
+            // check to see if in goal state
+            if (this->curState->perm == this->goalPerm)
+            {
+                return;
+            }
+
+            this->expand();
+
+            this->curState = this->f.pop();
+        }
+    }
+
+    // iterative deepening depth first search
+    void itDdfs()
+    {
+
+        int depthBound = 1;
+
+        this->f = frontier("stack");
+
+        while (true)
+        {
+            // debug
+            // cout << "curState->perm == this->goalPerm : " << this->curState->perm << " == " << this->goalPerm << "\n";
+
+            // check to see if in goal state
+            if (this->curState->perm == this->goalPerm)
+            {
+                return;
+            }
+
+            // check curState for appropriate depth before expansion.
+            if (this->curState->level < depthBound)
+            { // expand current state
+                this->expand();
+            }
+
+            // ensure frontier has states
+            if (this->f.size() == 0)
+            {
+
+                //  increment depth boundary by 1 and reset everything
+                depthBound += 1;
+
+                // debug:
+                cout << "Increased depth boundary to: " << depthBound << "\n";
+
+                // debug: limit depth for analysis purposes
+                //  if (depthBound > 10)
+                //      return;
+
+                // should clear reached array of all but the start state
+                this->reached = vector<state *>(1, this->start);
+
+                this->f = frontier("stack"); // technically this was already empty by this point.
+
+                this->curState = this->start;
+            }
+            else
+            {
+                this->curState = this->f.pop();
+            }
         }
     }
 };
@@ -643,26 +636,37 @@ public:
 int main(int argc, char *argv[])
 {
 
-    string goalState("123456780");
+    string goalState;
+    string startState;
+    string algo;
 
-    // string startState("160273485");
-    string startState("120345786");
-    // string startState("203145786");
-    // string startState("123405786");
+    if (argc > 3)
+    {
+        startState = argv[1];
+        goalState = argv[2];
+        algo = argv[3];
+    }
+    else
+    {
+        goalState = "123456780";
 
-    string algo("itDdfs");
+        // startState = "160273485";
+        startState = "120345786";
+        // startState = "203145786";
+        // startState = "123405786";
+        // startState = "462301587";
+        // startState = "821574360";
 
-    // cout << "Hello World!";
+        algo = "bfs";
+    }
 
     SSsearch s(startState, goalState, algo);
     string solution = s.getSolution();
 
-    // test t(startState,"DLDRULDRULLDRUURDLDRUULDRD");
-    //DLLURDRULLDRRD
     test t1(startState, solution);
-
     string outputState = t1.outputState();
-
-    cout << "Output State: " << outputState << "\n";
-    cout << "Met goal state: " << (outputState == goalState) << "\n";
+    cout << "-- Solution Test --\nOutput State: " << outputState << "\n";
+    if(outputState == goalState) cout << "is equal to\n";
+    else cout << "is not equal to\n";
+    cout <<  "Goal State:   " << goalState << "\n";
 }
