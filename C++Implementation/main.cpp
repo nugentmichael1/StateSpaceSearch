@@ -23,11 +23,6 @@ struct state
     int level;
 
     state(string perm, state *parent, char movement, int level) : perm(perm), parent(parent), movement(movement), level(level) {}
-
-    // const string getPerm()
-    // {
-    //     return this->perm;
-    // }
     void print()
     {
         cout << "-- State -- perm: " << perm << ";parent: " << parent << "; movement: " << movement << "; level: " << level << "\n";
@@ -36,15 +31,15 @@ struct state
 
 class frontier
 {
-    queue<state> q;
-    stack<state> stk;
-    priority_queue<state> pQ;
+    queue<state *> q;
+    stack<state *> stk;
+    priority_queue<state *> pQ;
     string type;
 
 public:
     frontier() {}
     frontier(string type) : type(type) {}
-    void push(state &s)
+    void push(state *s)
     {
         if (this->type == "queue")
         {
@@ -63,7 +58,7 @@ public:
     {
         if (this->type == "queue")
         {
-            state *s = &(this->q.front());
+            state *s = this->q.front();
             this->q.pop();
             // debug:
             cout << "pop() return state print(): \n";
@@ -72,14 +67,14 @@ public:
         }
         else if (this->type == "stack")
         {
-            state *s = &(this->stk.top());
+            state *s = this->stk.top();
             this->stk.pop();
             return s;
         }
         else if (this->type == "pQueue")
         {
             // double check top is correct
-            //state *s = &(this->pQ.top());
+            // state *s = this->pQ.top();
             // this->pQ.pop(); //need to create the comparison function
             return NULL;
         }
@@ -109,18 +104,18 @@ public:
 
 class SSsearch
 {
-    vector<state> reached;
+    vector<state *> reached;
     // vector<state> frontier;
     frontier f;
     int expandCount = 0;
-    state start;
+    state *start;
     state *curState;
     string goalPerm;
     int dimension;   // usually 3 or 4.
     string solution; // sequence of movements.
 
 public:
-    SSsearch(string start, string goal, string algo) : start(state(start, NULL, 'A', 0)), goalPerm(goal), curState(&(this->start))
+    SSsearch(string start, string goal, string algo) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start)
     {
 
         // create state object from start state permutation
@@ -138,7 +133,7 @@ public:
         // this.frontier.push(this.start);
 
         // might need to take floor of this
-        this->dimension = sqrt(this->start.perm.length());
+        this->dimension = sqrt(this->start->perm.length());
 
         cout << "search called\n";
 
@@ -152,7 +147,7 @@ public:
         cout << "made it past valideInput() checks\n";
 
         // check start and goal are of same length
-        if (this->start.perm.length() != this->goalPerm.length())
+        if (this->start->perm.length() != this->goalPerm.length())
             return;
 
         // debug:
@@ -177,6 +172,11 @@ public:
         cout << "Reached Size: " << this->reached.size() << "\n";
     }
 
+    string getSolution()
+    {
+        return this->solution;
+    }
+
     void traceBack()
     {
 
@@ -193,9 +193,10 @@ public:
             return;
 
         // debug:
-        int i = 0;
+        // int i = 0;
 
-        while (cur->parent != NULL && i < 4)
+        // while (cur->parent != NULL && i < 10)
+        while (cur->parent != NULL)
         {
             // debug
             cout << "While Loop: cur\n";
@@ -205,7 +206,8 @@ public:
             cout << "cur->movement: " << cur->movement << "\n";
             this->solution += cur->movement;
             cur = cur->parent;
-            i++;
+            // debug:
+            // i++;
         }
 
         // reverse the solution string
@@ -281,39 +283,53 @@ public:
 
         while (true)
         {
+            // debug
+            // cout << "curState->perm == this->goalPerm : " << this->curState->perm << " == " << this->goalPerm << "\n";
+
             // check to see if in goal state
             if (this->curState->perm == this->goalPerm)
             {
                 return;
             }
 
-            // console.log("itDdfs,reached",this.reached);
-            // console.log("itDdfs,frontier",this.frontier);
-            // console.log("itDdfs,curState",this.curState);
-
-            // expand current state
-            this->expand();
-
-            this->curState = this->f.pop();
-
-            // reject nodes that are beyond the depth boundary
-            while (this->curState->level >= depthBound && this->f.size() != 0)
-            {
-
-                this->curState = this->f.pop();
+            // check curState for appropriate depth before expansion.
+            if (this->curState->level < depthBound)
+            { // expand current state
+                this->expand();
             }
+
+            // ensure frontier has states
             if (this->f.size() == 0)
             {
-                // increment depth boundary by 1 and reset everything
+
+                //  increment depth boundary by 1 and reset everything
                 depthBound += 1;
 
+                // debug:
+                cout << "Increased depth boundary to: " << depthBound << "\n";
+
+                // debug: limit depth for analysis purposes
+                //  if (depthBound > 10)
+                //      return;
+
                 // should clear reached array of all but the start state
-                this->reached = vector<state>(1, this->start);
+                this->reached = vector<state *>(1, this->start);
 
                 this->f = frontier("stack"); // technically this was already empty by this point.
 
-                this->curState = &(this->start);
+                this->curState = this->start;
             }
+            else
+            {
+                this->curState = this->f.pop();
+            }
+
+            // reject nodes that are beyond the depth boundary
+            // while (this->curState->level >= depthBound && this->f.size() != 0)
+            // {
+
+            //     this->curState = this->f.pop();
+            // }
         }
     }
 
@@ -323,6 +339,10 @@ public:
         // console.log("expand()",this.curState);
 
         // order: up, down, left, right
+
+        // debug: itDdfs issue
+        // if (this->curState->perm == "123045786")
+        //     cout << "\nExpanding 123045786\n\n";
 
         // find zero (blank) tile index
         int zeroIndex = this->curState->perm.find('0');
@@ -371,6 +391,9 @@ public:
         {
             // check right
 
+            // debug:
+            cout << "check right: curState \n";
+            this->curState->print();
             // find swap target's index
             int swapTargetIndex = zeroIndex + 1;
 
@@ -390,26 +413,25 @@ public:
         newStatePerm[zeroIndex] = newStatePerm[swapTargetIndex];
         newStatePerm[swapTargetIndex] = '0';
 
-        // turn array back to string (javaScript specific issue)
-        // let newStateStr = newState.join("");
-        // console.log("newState", newStateStr);
-
         // search reached container for new state
-        vector<state>::iterator it = find_if(this->reached.begin(), this->reached.end(), [newStatePerm](state s)
-                                             { return (s.perm == newStatePerm); });
-        // if (!this->reached.find(s = > s.perm == = newStateStr))
+        vector<state *>::iterator it = find_if(this->reached.begin(), this->reached.end(), [newStatePerm](state *s)
+                                               { return (s->perm == newStatePerm); });
         if (it == this->reached.end())
         {
-            // "new state not found in reached.  adding it to reached and frontier."
+            // new state not found in reached.
+
+            // debug: curState pointer verification
+            //  cout << "this->curState: " << this->curState << "\n";
+            //  cout << "curState: " << curState << "\n";
 
             // add new state to reached and frontier
-            state s(newStatePerm, this->curState, movement, this->curState->level + 1);
+            state *s = new state(newStatePerm, this->curState, movement, this->curState->level + 1);
             this->reached.emplace_back(s);
             this->f.push(s);
 
             // debug: check new state properties
-            cout << "New State pushed\n";
-            s.print();
+            // cout << "New State pushed\n";
+            // s->print();
         }
     }
 
@@ -418,7 +440,7 @@ public:
     {
 
         // get input state
-        string candidateState = (type == "start") ? this->start.perm : this->goalPerm;
+        string candidateState = (type == "start") ? this->start->perm : this->goalPerm;
 
         // check for valid domain (i.e. [0-n))
         // clean
@@ -500,16 +522,147 @@ public:
     }
 };
 
+class test
+{
+    string start;
+    string sequence;
+    string currentState;
+    int zeroIndex;
+    int dimension;
+
+    bool legalMove(char move)
+    {
+        int zeroCol = this->zeroIndex % this->dimension;
+        int zeroRow = this->zeroIndex / this->dimension;
+
+        if (move == 'U')
+        {
+            if (zeroRow == 0)
+                return false;
+
+            return true;
+        }
+        else if (move == 'D')
+        {
+            if (zeroRow == this->dimension - 1)
+                return false;
+
+            return true;
+        }
+        else if (move == 'L')
+        {
+            if (zeroCol == 0)
+                return false;
+
+            return true;
+        }
+        else if (move == 'R')
+        {
+            if (zeroCol == this->dimension - 1)
+                return false;
+            return true;
+        }
+        else
+        {
+            cout << "Incorrect move character provided.\n";
+            return false;
+        }
+    }
+
+    void makeMove(char &move)
+    {
+        int targetIndex;
+
+        if (move == 'U')
+        {
+            targetIndex = this->zeroIndex - this->dimension;
+        }
+        else if (move == 'D')
+        {
+            targetIndex = this->zeroIndex + this->dimension;
+        }
+        else if (move == 'L')
+        {
+            targetIndex = this->zeroIndex - 1;
+        }
+        else if (move == 'R')
+        {
+            targetIndex = this->zeroIndex + 1;
+        }
+        else
+        {
+            cout << "Incorrect move character encountered.\n";
+        }
+
+        // make swap
+        this->currentState[this->zeroIndex] = this->currentState[targetIndex];
+        this->currentState[targetIndex] = '0';
+        this->zeroIndex = targetIndex;
+    }
+
+public:
+    test(string start, string sequence) : start(start), sequence(sequence)
+    {
+        this->dimension = sqrt(this->start.length());
+    }
+    string outputState()
+    {
+        if (start.length() % this->dimension != 0)
+        {
+            cout << "Input start state string is not a squared length.  Cannot calculate output state.\n";
+            return "";
+        }
+
+        this->zeroIndex = start.find('0');
+        // debug:
+        //  cout << "zeroIndex: " << zeroIndex << "\n";
+
+        this->currentState = this->start;
+
+        for (int i = 0; i < this->sequence.length(); i++)
+        {
+            if (this->legalMove(this->sequence[i]))
+            {
+                this->makeMove(sequence[i]);
+
+                // debug
+                // cout << "State @ i=" << i << ": " << this->currentState << "\n";
+            }
+            else
+            {
+                cout << "Error: illegal move.  Cannot compute final state.\n";
+                cout << "Move: ";
+                return "";
+            }
+        }
+
+        return this->currentState;
+    }
+};
+
 int main(int argc, char *argv[])
 {
 
     string goalState("123456780");
+
     // string startState("160273485");
-    string startState("123450786");
+    string startState("120345786");
+    // string startState("203145786");
+    // string startState("123405786");
 
-    string algo("bfs");
+    string algo("itDdfs");
 
-    cout << "Hello World!";
+    // cout << "Hello World!";
 
     SSsearch s(startState, goalState, algo);
+    string solution = s.getSolution();
+
+    // test t(startState,"DLDRULDRULLDRUURDLDRUULDRD");
+    //DLLURDRULLDRRD
+    test t1(startState, solution);
+
+    string outputState = t1.outputState();
+
+    cout << "Output State: " << outputState << "\n";
+    cout << "Met goal state: " << (outputState == goalState) << "\n";
 }
