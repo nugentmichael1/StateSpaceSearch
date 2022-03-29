@@ -6,7 +6,7 @@ Term: Spring 2022
 Course Professor: David Ruby    
 College: CSU, Fresno    
 
-This is a C++ and JavaScript implementation of various state space search algorithms within a puzzle slider domain.  JavaScript is about tens times slower than C++, which means some of the algorithms like DFS will cause the browser to hang up with even minorly complex of problems.  The advantage to JavaScript is the visualization of the puzzle slider, and should be used for easier functionality like solution tests.
+This is a C++ and JavaScript implementation of various state space search algorithms within a puzzle slider domain.  JavaScript is about tens times slower than C++, which means some of the algorithms like DFS will cause the browser to hang up with even minorly complex of problems.  The advantage to JavaScript is the visualization of the puzzle slider, and should be used for easier functionality like solution tests.  C++ is better for the actual search algorithms, especially DFS.
 
 Below were the provided instructions of the assignment.    
 
