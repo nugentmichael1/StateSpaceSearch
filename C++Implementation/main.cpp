@@ -507,7 +507,7 @@ int main(int argc, char *argv[])
     // string startState("160273485");
     string startState("123450786");
 
-    string algo("dfs");
+    string algo("bfs");
 
     cout << "Hello World!";
 
