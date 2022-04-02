@@ -41,7 +41,7 @@ Start State | Solution String | Algorithm
 --- | --- | --- 
 "160273485" | DDLUURDLLDRRUULDRD | A* w/ Manhattan Distance
 "462301587" | RDLURULLDRDLURULDRRULDDR | A* w/ Manhattan Distance
-"821574360"| LLURULDRDRULURDLLURDDRULLDRULDRR <br> LURULLDRULDDRURULDLURRDLURDD | ? <br> A* w/ Manhattan Distance
+"821574360"| <ul><li>LLURULDRDRULURDLLURDDRULLDRULDRR</li><li>LURULLDRULDDRURULDLURRDLURDD</li></ul> | <ul><li>?</li><li>A* w/ Manhattan Distance</li></ul>
 "840156372"|
 "530478126"|
 "068314257"|
