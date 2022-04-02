@@ -5,7 +5,7 @@ Professor: David Ruby
 Semester: Spring 2022
 School: CSU, Fresno
 
-Program Description: This is a C++ implementation of State Space Search algorithms within a Tile Slider Puzzle domain (8, and 15).  The implemented algorithms are three basics: breadth first search (bfs), depth first search (dfs), and iterative deepening dfs; and two advanced: A* with hueristics, and iterative deepening dfs with hueristics.  
+Program Description: This is a C++ implementation of State Space Search algorithms within a Tile Slider Puzzle domain (8, and 15).  The implemented algorithms are three basics: breadth first search (bfs), depth first search (dfs), and iterative deepening dfs; and two advanced: A* with hueristics, and iterative deepening dfs with hueristics.
 
 Compile: g++ main.cpp -o main.o
 Run: ./main.o <start state> <goal state> <algorithm>
@@ -27,16 +27,37 @@ using namespace std;
 
 struct state
 {
-    string test; // why is this here?
     string perm;
     state *parent;
     char movement;
-    int level;
+    int level = 0;
+    int costSoFar = 0;  // acts same as level in tile-slider domain, but has different name for readability purposes.
+    int estTtlCost = 0; // estimated total cost: f(n) = g(n) + h(n) = costSoFar + hueristic.
 
+    // constructor for non-heuristic algorithms
     state(string perm, state *parent, char movement, int level) : perm(perm), parent(parent), movement(movement), level(level) {}
+
+    // constructor for heuristic algorithms
+    state(string perm, state *parent, char movement, int costSoFar, int estTtlCost) : perm(perm), parent(parent), movement(movement), costSoFar(costSoFar), estTtlCost(estTtlCost) {}
+
+    // debug tool
     void print()
     {
-        cout << "-- State -- perm: " << perm << "; parent: " << parent << "; movement: " << movement << "; level: " << level << "\n";
+        cout << "-- State -- perm: " << perm << "; parent: " << parent << "; movement: " << movement << "; level: " << level << "; costSoFar: " << costSoFar << "; estTtlCost: " << estTtlCost << "\n";
+    }
+
+    // bool operator<(state &rhs)
+    // {
+    //     return this->estTtlCost < rhs.estTtlCost;
+    // }
+};
+
+class pQCompare
+{
+public:
+    bool operator()(state *lhs, state *rhs)
+    {
+        return lhs->estTtlCost > rhs->estTtlCost;
     }
 };
 
@@ -44,7 +65,7 @@ class frontier
 {
     queue<state *> q;
     stack<state *> stk;
-    priority_queue<state *> pQ;
+    priority_queue<state *, vector<state *>, pQCompare> pQ;
     string type;
 
 public:
@@ -62,7 +83,8 @@ public:
         }
         else if (this->type == "pQueue")
         {
-            // this->pQ.push(s); //need to add comparison function
+            this->pQ.push(s);
+            // cout << "Pushed onto pQueue\n";
         }
     }
     state *pop()
@@ -71,9 +93,6 @@ public:
         {
             state *s = this->q.front();
             this->q.pop();
-            // debug:
-            // cout << "pop() return state print(): \n";
-            // s->print();
             return s;
         }
         else if (this->type == "stack")
@@ -85,9 +104,10 @@ public:
         else if (this->type == "pQueue")
         {
             // double check top is correct
-            // state *s = this->pQ.top();
-            // this->pQ.pop(); //need to create the comparison function
-            return NULL;
+            state *s = this->pQ.top();
+            this->pQ.pop(); // need to create the comparison function
+            // cout << "Popped off pQueue\n";
+            return s;
         }
         else
         {
@@ -116,6 +136,7 @@ public:
 class SSsearch
 {
     vector<state *> reached;
+    vector<state *> expanded; // only used for A* algorithms, replaces reached
     // vector<state> frontier;
     frontier f;
     unsigned int expandCount = 0;
@@ -124,6 +145,7 @@ class SSsearch
     string goalPerm;
     int dimension;   // usually 3 or 4.
     string solution; // sequence of movements.
+    string heuristicType = "oOP";
 
     // opens up possible new states from current state, and adds to frontier if not seen before
     void expand()
@@ -194,6 +216,181 @@ class SSsearch
 
         // console.log("reached", this.reached);
         // console.log("frontier", this.frontier)
+    }
+
+    void expandAStar()
+    {
+        // increment expand count.  may be able to just take size of expanded vector at end.
+        this->expandCount += 1;
+
+        // debug:
+         cout << "expandAStar()";
+         this->curState->print();
+
+        // premptively add curState to expanded tracker
+        this->expanded.emplace_back(this->curState);
+
+        int zeroIndex = this->curState->perm.find('0');
+        int zeroRow = floor(zeroIndex / this->dimension);
+        int zeroCol = zeroIndex % this->dimension;
+
+        // order: up, down, left, right
+
+        // up & down
+        if (zeroRow > 0)
+        {
+            // check up
+
+            // find swap target's index
+            int swapTargetIndex = zeroIndex - this->dimension;
+
+            // check if up movement's resultant new state has already been reached.  if not, add to reached and frontier.
+            this->checkExpandedAddToFrontier(swapTargetIndex, 'U', zeroIndex);
+        }
+
+        if (zeroRow < this->dimension - 1)
+        {
+            // check down
+
+            // find swap target's index
+            int swapTargetIndex = zeroIndex + this->dimension;
+
+            // this will check if the down move state has already been reached, and add it to reached and frontier, if not.
+            this->checkExpandedAddToFrontier(swapTargetIndex, 'D', zeroIndex);
+        }
+
+        // check left and right
+        if (zeroCol > 0)
+        {
+            // check left
+
+            // find swap target's index
+            int swapTargetIndex = zeroIndex - 1;
+
+            // this will check if the Left move state has already been reached, and add it to reached and frontier, if not.
+            this->checkExpandedAddToFrontier(swapTargetIndex, 'L', zeroIndex);
+        }
+
+        if (zeroCol < this->dimension - 1)
+        {
+            // check right
+
+            // find swap target's index
+            int swapTargetIndex = zeroIndex + 1;
+
+            // this will check if the right move state has already been reached, and add it to reached and frontier, if not.
+            this->checkExpandedAddToFrontier(swapTargetIndex, 'R', zeroIndex);
+        }
+
+        // console.log("reached", this.reached);
+        // console.log("frontier", this.frontier)
+    }
+
+    void checkExpandedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
+    {
+        // create array copy of curState and perform swap
+        string newStatePerm = this->curState->perm;
+        newStatePerm[zeroIndex] = newStatePerm[swapTargetIndex];
+        newStatePerm[swapTargetIndex] = '0';
+
+        // search expanded container for new state
+        vector<state *>::iterator it = find_if(this->expanded.begin(), this->expanded.end(), [newStatePerm](state *s)
+                                               { return (s->perm == newStatePerm); });
+        if (it == this->expanded.end())
+        {
+            // new state not found in expanded.  add to frontier and expanded.
+
+            // estimated cost from new state to goal state based on heuristic
+            int heuristicCost = heuristic(newStatePerm);
+
+            // cost so far to new state
+            int newCostSoFar = this->curState->costSoFar + 1;
+
+            // total estimated cost: f(n) = g(n) + h(n) = newCostSoFar + heuristicCost
+            int ttlEstCost = newCostSoFar + heuristicCost;
+
+            // add new state to expanded and frontier
+            state *s = new state(newStatePerm, this->curState, movement, newCostSoFar, ttlEstCost);
+
+            this->expanded.emplace_back(s);
+            this->f.push(s);
+        }
+    }
+
+    int heuristic(string &perm)
+    {
+        int distance = 0;
+
+        if (this->heuristicType == "oOP")
+            return this->oOPDistance(perm);
+        else if (this->heuristicType == "mHD")
+            return this->manhattanDistance(perm);
+        else
+        {
+            cout << "Heuristic type not recognized.";
+            return -1;
+        }
+    }
+
+    int oOPDistance(string &perm)
+    {
+        int distance = 0;
+
+        for (int i = 0; i < perm.length(); i++)
+        {
+            // for every tile that is not in the correct position, add 1 to the distance
+            if (perm[i] != this->goalPerm[i])
+                distance++;
+        }
+
+        return distance;
+    }
+
+    int manhattanDistance(string &perm)
+    {
+        int totalDistance = 0;
+
+        for (int i = 0; i < perm.length(); i++)
+        {
+
+            // determine target index
+            int currentValue = perm[i];
+            string::iterator it = find(this->goalPerm.begin(), this->goalPerm.end(), currentValue);
+            int targetIndex = it - this->goalPerm.begin();
+
+            // determine coordinates of current position
+            int currentRow = i / this->dimension;
+            int currentCol = i % this->dimension;
+
+            // determine coordinates of target position
+            int targetRow = targetIndex / this->dimension;
+            int targetCol = targetIndex % this->dimension;
+
+            // determine how many moves must be made per dimension
+            int horizontal = abs(currentCol - targetCol);
+            int vertical = abs(currentRow - targetRow);
+
+            // add both dimension distances to total distance
+
+            totalDistance += horizontal + vertical;
+
+            // if (i < targetIndex)
+            // {
+            //     // first find how many tiles down it must travel
+            // }
+            // else if (i > targetIndex)
+            // {
+            // }
+            // else if (i == targetIndex)
+            //     totalDistance += 0;
+            // else
+            // {
+            //     cout << "Something wrong in manhattan distance calculation.  Current Index and Target Index have no relationship.\n";
+            //     return -1;
+            // }
+        }
+
+        return totalDistance;
     }
 
     // utility function to clean up expand()
@@ -393,8 +590,12 @@ public:
             this->dfs();
         else if (algo == "itDdfs")
             this->itDdfs();
+        else if (algo == "a*")
+            this->aStar();
+        else if (algo == "a*ID")
+            this->aStarItDeep();
         else
-            cout << "algorithm paramter string not recognized.\n";
+            cout << "algorithm parameter string not recognized.\n";
 
         cout
             << "Reached goal state: " << this->curState->perm << "\n";
@@ -405,6 +606,16 @@ public:
         cout << "Solution: " << this->solution << "\n";
         cout << "Frontier Size: " << this->f.size() << "\n";
         cout << "Reached Size: " << this->reached.size() << "\n";
+    }
+
+    void setHeuristicOOP()
+    {
+        this->heuristicType = "oOP";
+    }
+
+    void setHeuristicMHD()
+    {
+        this->heuristicType = "mHD";
     }
 
     // returns solution (move sequence)
@@ -523,6 +734,33 @@ public:
                 this->curState = this->f.pop();
             }
         }
+    }
+
+    void aStar()
+    {
+        this->f = frontier("pQueue");
+        // int i = 0;
+        while (true)
+        {
+            // check to see if goal state found and taken off frontier
+            if (this->curState->perm == this->goalPerm)
+            {
+                return;
+            }
+
+            // explore next states and possibly add to frontier
+            this->expandAStar();
+
+            this->curState = this->f.pop();
+
+            // debug
+            // cout << "curState estTtlCost: " << this->curState->estTtlCost << "\n";
+            // i++;
+        }
+    }
+
+    void aStarItDeep()
+    {
     }
 };
 
@@ -658,21 +896,27 @@ int main(int argc, char *argv[])
     }
     else
     {
-        // startState = "160273485";
         // startState = "120345786";
         // startState = "203145786";
         // startState = "123405786";
-        // startState = "462301587";
-        // startState = "821574360";
-        startState = "840156372";
+        // startState = "123450786";
+        // startState = "023145786";
+
+        // assignment start states
+        //  startState = "160273485";
+         startState = "462301587";
+        //  startState = "821574360";
+        //  startState = "840156372";
 
         goalState = "123456780";
         // goalState = "123456789ABCDEF0";
 
-        algo = "bfs";
+        algo = "a*";
     }
 
     SSsearch s(startState, goalState, algo);
+    // s.setHeuristicOOP();
+    s.setHeuristicMHD();
     string solution = s.getSolution();
 
     test t1(startState, solution);
