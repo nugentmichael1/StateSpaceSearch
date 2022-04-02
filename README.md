@@ -17,7 +17,7 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 - [x] Breadth-First Search    
 - [x] Depth-First Search    
 - [x] Iterative-Deepening Depth-First Search    
-- [ ] A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
+- [x] A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
 - [ ] Iterative Deepening A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
 
 ### Develop search code with requirements:
@@ -39,9 +39,9 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 
 Start State | Solution String | Algorithm
 --- | --- | --- 
-"160273485" | DDLUURDLLDRRUULDRD
-"462301587" | RDLURULLDRDLURULDRRULDDR
-"821574360"| LLURULDRDRULURDLLURDDRULLDRULDRR
+"160273485" | DDLUURDLLDRRUULDRD | A* w/ Manhattan Distance
+"462301587" | RDLURULLDRDLURULDRRULDDR | A* w/ Manhattan Distance
+"821574360"| LLURULDRDRULURDLLURDDRULLDRULDRR <br> LURULLDRULDDRURULDLURRDLURDD | ? <br> A* w/ Manhattan Distance
 "840156372"|
 "530478126"|
 "068314257"|

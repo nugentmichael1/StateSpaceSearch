@@ -224,8 +224,8 @@ class SSsearch
         this->expandCount += 1;
 
         // debug:
-         cout << "expandAStar()";
-         this->curState->print();
+        cout << "expandAStar()";
+        this->curState->print();
 
         // premptively add curState to expanded tracker
         this->expanded.emplace_back(this->curState);
@@ -873,7 +873,7 @@ public:
             else
             {
                 cout << "Error: illegal move.  Cannot compute final state.\n";
-                cout << "Move: ";
+                cout << "Move#: " << i << "; Move Char: " << this->sequence[i] << "\n";
                 return "";
             }
         }
@@ -904,9 +904,25 @@ int main(int argc, char *argv[])
 
         // assignment start states
         //  startState = "160273485";
-         startState = "462301587";
-        //  startState = "821574360";
+        //  startState = "462301587";
+        startState = "821574360";
         //  startState = "840156372";
+        // startState = "530478126";
+        // startState = "068314257";
+        // startState = "453207186";
+        // startState = "128307645";
+        // startState = "035684712";
+        // startState = "684317025";
+        // startState = "028514637";
+        // startState = "618273540";
+        // startState = "042385671";
+        // startState = "";
+        // startState = "";
+        // startState = "";
+        // startState = "";
+        // startState = "";
+        // startState = "";
+        // startState = "";
 
         goalState = "123456780";
         // goalState = "123456789ABCDEF0";
