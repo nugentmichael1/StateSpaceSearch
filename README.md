@@ -37,37 +37,38 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 - [ ] Provide overview of your code.
 - [ ] Provide results for the following problems:
 
+8 Puzzle
 Start State | Solution String | Algorithm
 --- | --- | --- 
 "160273485" | DDLUURDLLDRRUULDRD | A* w/ Manhattan Distance
 "462301587" | RDLURULLDRDLURULDRRULDDR | A* w/ Manhattan Distance
 "821574360"| <ul><li>LLURULDRDRULURDLLURDDRULLDRULDRR</li><li>LURULLDRULDDRURULDLURRDLURDD</li></ul> | <ul><li>?</li><li>A* w/ Manhattan Distance</li></ul>
-"840156372"|
-"530478126"|
-"068314257"|
-"453207186"|
-"128307645"|
-"035684712"|
-"684317025"|
-"028514637"|
-"618273540"|
-"042385671"|
-"420385716"|
-"054672813"|
-"314572680"|
-"637218045"|
-"430621875"|
-"158274036"|
-"130458726"|
+"840156372"|DLLURDLDRRULLURDDRUULDDR|A* w/ Manhattan Distance
+"530478126"|DLDLURDRUULDLURDDRULLDRR|A* w/ Manhattan Distance
+"068314257"|DRRULLDRDLURDRUULDLDRR|A* w/ Manhattan Distance
+"453207186"|RDLUULDDRUULDRDR|A* w/ Manhattan Distance
+"128307645"|LURDRULLDRDLURRDLURD|A* w/ Manhattan Distance
+"035684712"|RDLDRURDLULDRUULDDRURULDRD|A* w/ Manhattan Distance
+"684317025"|RURULLDDRURULLDDRRUULLDRDR|A* w/ Manhattan Distance
+"028514637"|DRRDLURULLDRDLURRDLUURDD|A* w/ Manhattan Distance
+"618273540"|LUULDRRULDDRUULLDDRULDRR|A* w/ Manhattan Distance
+"042385671"|DDRRULLURDDRUULDLURDRULDDR|A* w/ Manhattan Distance
+"420385716"|DLLURDDLURRULLDDRURD|A* w/ Manhattan Distance
+"054672813"|DRDLURURDLULDRRDLUURDLDR|A* w/ Manhattan Distance
+"314572680"|LULDRUULDRURDLULDRURDLDR|A* w/ Manhattan Distance
+"637218045"|RRUULDLURDRDLULDRRULDR|A* w/ Manhattan Distance
+"430621875"|DLURDLLDRULURRDDLURD|A* w/ Manhattan Distance
+"158274036"|URDRUULDDRULDLURDRUULDRD|A* w/ Manhattan Distance
+"130458726"|DLDRUULDDRULDR|A* w/ Manhattan Distance
 
 15 Puzzle - Easy   
 Start State | Solution String | Algorithm
 --- | --- | ---
 "16235A749C08DEBF"|LUURRDDLDR|Iterative Deepening DFS
-"0634217859ABDEFC"|RDLURDLDRRRD|Iterative Deepening DFS
+"0634217859ABDEFC"|<ul><li>RDLURDLDRRRD</li><li>DRULDDRRRD</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A* w/ Manhattan Distance</li></ul>
 "012456379BC8DAEF"|RRDRDLLDRR|Iterative Deepening DFS
 "51246A38097BDEFC"|RULURRDDRD|Iterative Deepening DFS
-"12345678D9CFEBA0"|LURDLURDLLLURRDR|Iterative Deepening DFS
+"12345678D9CFEBA0"|<ul><li>LURDLURDLLLURRDR</li><li>ULDLLURRDR</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A * w/ Manhattan Distance</li></ul>
 
 15 Puzzle - Difficult
 Start State | Solution String | Algorithm

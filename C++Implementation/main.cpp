@@ -16,12 +16,13 @@ Run default: If no parameters are provided, a set of default states and algorith
 #include <fstream>   //read batch sequences or start states
 #include <iostream>  //display answers
 #include <vector>    //reached
-#include <string>    //states
+#include <string>    //state permutations
 #include <math.h>    //square root
 #include <algorithm> //sort
 #include <set>       //check uniqueness of characters of start and goal states
 #include <queue>     //bfs frontier, priority queue A*
 #include <stack>     //dfs, iddfs
+#include <stdio.h>  //remove file?
 
 using namespace std;
 
@@ -45,11 +46,6 @@ struct state
     {
         cout << "-- State -- perm: " << perm << "; parent: " << parent << "; movement: " << movement << "; level: " << level << "; costSoFar: " << costSoFar << "; estTtlCost: " << estTtlCost << "\n";
     }
-
-    // bool operator<(state &rhs)
-    // {
-    //     return this->estTtlCost < rhs.estTtlCost;
-    // }
 };
 
 class pQCompare
@@ -61,11 +57,35 @@ public:
     }
 };
 
+template <class T>
+class customPQ : public priority_queue<T, vector<T>, pQCompare>
+{
+public:
+    bool remove(T &s1)
+    {
+        // find an occurence of the state in the priority queue
+        auto it = find_if(this->c.begin(), this->c.end(), [s1](T s2)
+                          { return (s1->perm == s2->perm); });
+
+        // if the state was found, remove it from vector (priority queue)
+        if (it != this->c.end())
+        {
+            this->c.erase(it);
+            make_heap(this->c.begin(), this->c.end(), this->comp);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+};
+
 class frontier
 {
     queue<state *> q;
     stack<state *> stk;
-    priority_queue<state *, vector<state *>, pQCompare> pQ;
+    customPQ<state *> pQ;
     string type;
 
 public:
@@ -84,7 +104,6 @@ public:
         else if (this->type == "pQueue")
         {
             this->pQ.push(s);
-            // cout << "Pushed onto pQueue\n";
         }
     }
     state *pop()
@@ -103,10 +122,8 @@ public:
         }
         else if (this->type == "pQueue")
         {
-            // double check top is correct
             state *s = this->pQ.top();
-            this->pQ.pop(); // need to create the comparison function
-            // cout << "Popped off pQueue\n";
+            this->pQ.pop();
             return s;
         }
         else
@@ -131,6 +148,19 @@ public:
         }
         return 0;
     }
+    void removeAll(state *s)
+    {
+        if (this->type == "pQueue")
+        {
+            while (pQ.remove(s))
+                ;
+        }
+        else
+        {
+            cout << "frontier.remove() called by incorrect type.\n";
+        }
+        // cout << "All instances of " << s->perm << " removed from frontier.\n";
+    }
 };
 
 class SSsearch
@@ -153,10 +183,6 @@ class SSsearch
         this->expandCount += 1;
 
         // order: up, down, left, right
-
-        // debug: itDdfs issue
-        // if (this->curState->perm == "123045786")
-        //     cout << "\nExpanding 123045786\n\n";
 
         // find zero (blank) tile index
         int zeroIndex = this->curState->perm.find('0');
@@ -203,10 +229,6 @@ class SSsearch
         {
             // check right
 
-            // debug:
-            // cout << "check right: curState \n";
-            // this->curState->print();
-
             // find swap target's index
             int swapTargetIndex = zeroIndex + 1;
 
@@ -223,9 +245,8 @@ class SSsearch
         // increment expand count.  may be able to just take size of expanded vector at end.
         this->expandCount += 1;
 
-        // debug:
-        cout << "expandAStar()";
-        this->curState->print();
+        // cout << "expandAStar(): ";
+        // this->curState->print();
 
         // premptively add curState to expanded tracker
         this->expanded.emplace_back(this->curState);
@@ -371,23 +392,7 @@ class SSsearch
             int vertical = abs(currentRow - targetRow);
 
             // add both dimension distances to total distance
-
             totalDistance += horizontal + vertical;
-
-            // if (i < targetIndex)
-            // {
-            //     // first find how many tiles down it must travel
-            // }
-            // else if (i > targetIndex)
-            // {
-            // }
-            // else if (i == targetIndex)
-            //     totalDistance += 0;
-            // else
-            // {
-            //     cout << "Something wrong in manhattan distance calculation.  Current Index and Target Index have no relationship.\n";
-            //     return -1;
-            // }
         }
 
         return totalDistance;
@@ -409,23 +414,11 @@ class SSsearch
         {
             // new state not found in reached.
 
-            // debug: curState pointer verification
-            //  cout << "this->curState: " << this->curState << "\n";
-            //  cout << "curState: " << curState << "\n";
-
             // add new state to reached and frontier
             state *s = new state(newStatePerm, this->curState, movement, this->curState->level + 1);
             this->reached.emplace_back(s);
             this->f.push(s);
-
-            // debug: check new state properties
-            // cout << "New State pushed\n";
-            // s->print();
         }
-        // debug: ensure reached states are disregarded
-        //  else{
-        //      cout << "Found state in reached.  Skip.\n";
-        //  }
     }
 
     // ensure input states are composed of sequential and unique characters
@@ -441,7 +434,7 @@ class SSsearch
         for (int i = 0; i < candidateState.length(); i++)
         {
             int asciiVal = int(candidateState[i]);
-            cout << "asciiVal: " << asciiVal << "\n";
+            // cout << "asciiVal: " << asciiVal << "\n";
 
             if (asciiVal >= 48 && asciiVal <= 57)
             {
@@ -494,12 +487,7 @@ class SSsearch
         // check for uniqueness
         // insert arr3 contents into a set
         set<int> unique(arr3.begin(), arr3.end());
-        cout << "unique.size(): " << unique.size() << "\n";
-
-        // debug: check unique's contents
-        // cout << "unique:\n";
-        // for (auto a : unique)
-        //    cout << a << " - ";
+        // cout << "unique.size(): " << unique.size() << "\n";
 
         // verify every member of the arr was unique
         if (unique.size() == candidateState.size())
@@ -518,9 +506,6 @@ class SSsearch
     void traceBack()
     {
 
-        // debug:
-        // cout << "Inside traceBack()\n";
-        // cout << "this->curState->print()--\n";
         this->curState->print();
 
         // current state should be at goal state when this function is called
@@ -531,26 +516,28 @@ class SSsearch
         if (!cur)
             return;
 
-        // debug:
-        // int i = 0;
-
-        // while (cur->parent != NULL && i < 10)
         while (cur->parent != NULL)
         {
-            // debug
-            // cout << "While Loop: cur\n";
+
             cur->print();
 
-            // debug: track movement sequence generation
-            // cout << "cur->movement: " << cur->movement << "\n";
             this->solution += cur->movement;
             cur = cur->parent;
-            // debug:
-            // i++;
         }
+
+        // print start state
+        cur->print();
 
         // reverse the solution string
         reverse(this->solution.begin(), this->solution.end());
+    }
+
+    // Reports results to console.
+    void reportResults()
+    {
+        cout << "Start State: " << this->start->perm << "; Goal state: " << this->goalPerm << "; Solution: " << this->solution << "\n";
+
+        cout << "Expanded Count: " << this->expandCount << "; Frontier Size: " << this->f.size() << "; Reached Size: " << this->reached.size() << "\n";
     }
 
 public:
@@ -560,12 +547,8 @@ public:
         // record that start state has been seen
         this->reached.emplace_back(this->start);
 
-        // this.frontier.push(this.start);
-
-        // might need to take floor of this
+        // set dimension (e.g. 3x3 or 4x4)
         this->dimension = sqrt(this->start->perm.length());
-
-        cout << "search called\n";
 
         // verify start and goal states are in a valid format
         if (!this->validateInput("start"))
@@ -573,15 +556,9 @@ public:
         if (!this->validateInput("goal"))
             return;
 
-        // debug:
-        // cout << "made it past valideInput() checks\n";
-
         // check start and goal are of same length
         if (this->start->perm.length() != this->goalPerm.length())
             return;
-
-        // debug:
-        // cout << "Start state and goal states are the same length\n";
 
         // call appropriate search algorithm
         if (algo == "bfs")
@@ -597,15 +574,11 @@ public:
         else
             cout << "algorithm parameter string not recognized.\n";
 
-        cout
-            << "Reached goal state: " << this->curState->perm << "\n";
-
+        // get move sequence (aka solution)
         this->traceBack();
 
-        cout << "Expanded Count: " << this->expandCount << "\n";
-        cout << "Solution: " << this->solution << "\n";
-        cout << "Frontier Size: " << this->f.size() << "\n";
-        cout << "Reached Size: " << this->reached.size() << "\n";
+        // notify console of results
+        this->reportResults();
     }
 
     void setHeuristicOOP()
@@ -627,42 +600,22 @@ public:
     // breadth first search
     void bfs()
     {
-        // debug:
-        // cout << "Inside bfs()\n";
 
         this->f = frontier("queue");
 
         while (true)
         {
-            // debug:
-            // cout << "About to check for goal state\n";
-            // check to see if in goal state
-            // cout << "curState->perm == this->goalPerm : " << this->curState->perm << " == " << this->goalPerm << "\n";
+
             if (this->curState->perm == this->goalPerm)
             {
                 return;
             }
 
-            // debug
-            // cout << "Inside while loop of bfs()\n";
-
-            // console.log("frontier", this.frontier);
-
             // else expand current state
-            // console.log('expand')
             this->expand();
 
-            // debug
-            //  cout << "Finished expand()\n";
-            //  cout << "frontier size: " << f.size() << "\n";
             this->curState = this->f.pop();
-
-            // debug: check curState
-            // cout << "curState from latest f.pop()\n";
-            // this->curState->print();
         }
-        // debug:
-        // cout << "Left while loop of bfs()\n";
     }
 
     // depth first search
@@ -693,8 +646,6 @@ public:
 
         while (true)
         {
-            // debug
-            // cout << "curState->perm == this->goalPerm : " << this->curState->perm << " == " << this->goalPerm << "\n";
 
             // check to see if in goal state
             if (this->curState->perm == this->goalPerm)
@@ -739,7 +690,7 @@ public:
     void aStar()
     {
         this->f = frontier("pQueue");
-        // int i = 0;
+
         while (true)
         {
             // check to see if goal state found and taken off frontier
@@ -751,11 +702,11 @@ public:
             // explore next states and possibly add to frontier
             this->expandAStar();
 
-            this->curState = this->f.pop();
+            // remove all occurences of recently expanded state from frontier
+            this->f.removeAll(this->curState);
 
-            // debug
-            // cout << "curState estTtlCost: " << this->curState->estTtlCost << "\n";
-            // i++;
+            // get next state from priority queue
+            this->curState = this->f.pop();
         }
     }
 
@@ -849,6 +800,7 @@ public:
     }
     string outputState()
     {
+
         if (start.length() % this->dimension != 0)
         {
             cout << "Input start state string is not a squared length.  Cannot calculate output state.\n";
@@ -856,8 +808,6 @@ public:
         }
 
         this->zeroIndex = start.find('0');
-        // debug:
-        //  cout << "zeroIndex: " << zeroIndex << "\n";
 
         this->currentState = this->start;
 
@@ -866,9 +816,6 @@ public:
             if (this->legalMove(this->sequence[i]))
             {
                 this->makeMove(sequence[i]);
-
-                // debug
-                // cout << "State @ i=" << i << ": " << this->currentState << "\n";
             }
             else
             {
@@ -882,11 +829,17 @@ public:
     }
 };
 
+bool verifySolution(string &start, string &goal, string &solution);
+
+void printToFile(string &start, string &goal, string &solution, string &fileName);
+
+vector<string> getProblems(string &inputFile);
+
 int main(int argc, char *argv[])
 {
-    string startState;
-    string goalState;
-    string algo;
+    string startState = "123450786";
+    string goalState = "123456780";
+    string algo = "a*";
 
     if (argc > 3)
     {
@@ -894,38 +847,55 @@ int main(int argc, char *argv[])
         goalState = argv[2];
         algo = argv[3];
     }
+    else if (argc == 2)
+    {
+        string inputFile(argv[1]);
+        string outputFile("StateSpaceSearchResults.txt");
+
+        // erase output file so it's clear for new results
+        if (remove("StateSpaceSearchResults.txt") != 0)
+        {
+            perror("Error deleting output file");
+        }
+        else{
+            puts("Output file successfully deleted.");
+        }
+
+        vector<string> startStates = getProblems(inputFile);
+
+        for (auto a : startStates)
+        {
+            string goalState = "123456780";
+
+            if (a.length() == 16)
+            {
+                goalState = "123456789ABCDEF0";
+            }
+
+            SSsearch s(a, goalState, algo);
+            // s.setHeuristicOOP();
+            s.setHeuristicMHD();
+            string solution = s.getSolution();
+
+            if (verifySolution(a, goalState, solution))
+            {
+                // adds result to output file
+                printToFile(a, goalState, solution, outputFile);
+            }
+        }
+    }
     else
     {
-        // startState = "120345786";
-        // startState = "203145786";
-        // startState = "123405786";
-        // startState = "123450786";
-        // startState = "023145786";
+        //  Test Start States
+        startState = "120345786";
+        //  startState = "203145786";
+        //  startState = "123405786";
+        //  startState = "123450786";
+        //  startState = "023145786";
 
-        // assignment start states
-        //  startState = "160273485";
-        //  startState = "462301587";
-        startState = "821574360";
-        //  startState = "840156372";
-        // startState = "530478126";
-        // startState = "068314257";
-        // startState = "453207186";
-        // startState = "128307645";
-        // startState = "035684712";
-        // startState = "684317025";
-        // startState = "028514637";
-        // startState = "618273540";
-        // startState = "042385671";
-        // startState = "";
-        // startState = "";
-        // startState = "";
-        // startState = "";
-        // startState = "";
-        // startState = "";
-        // startState = "";
-
+        //  Test Goal States
         goalState = "123456780";
-        // goalState = "123456789ABCDEF0";
+        //  goalState = "123456789ABCDEF0";
 
         algo = "a*";
     }
@@ -934,13 +904,70 @@ int main(int argc, char *argv[])
     // s.setHeuristicOOP();
     s.setHeuristicMHD();
     string solution = s.getSolution();
+    verifySolution(startState, goalState, solution);
+}
 
+bool verifySolution(string &startState, string &goalState, string &solution)
+{
     test t1(startState, solution);
     string outputState = t1.outputState();
     cout << "-- Solution Test --\nOutput State: " << outputState << "\n";
-    if (outputState == goalState)
-        cout << "is equal to\n";
-    else
-        cout << "is not equal to\n";
     cout << "Goal State:   " << goalState << "\n";
+    cout << "Solution ";
+
+    if (outputState == goalState)
+    {
+        cout << "Passes\n\n";
+        return true;
+    }
+    else
+    {
+        cout << "Fails\n\n";
+        return false;
+    }
+}
+
+void printToFile(string &start, string &goal, string &solution, string &fileName)
+{
+    ofstream resultsFile(fileName, ofstream::app);
+
+    if (resultsFile.is_open())
+    {
+        resultsFile << goal << "|";
+        resultsFile << "\"" << start << "\"";
+        resultsFile << "|" << solution << "\n";
+
+        resultsFile.close();
+    }
+    else
+    {
+        cout << "Results file failed to open.\n";
+    }
+}
+
+vector<string> getProblems(string &inputFile)
+{
+    ifstream problems(inputFile);
+
+    vector<string> startStates;
+
+    if (problems.is_open())
+    {
+        string line;
+
+        while (!problems.eof())
+        {
+            getline(problems, line);
+            if (line[0] == '\"')
+            {
+                startStates.emplace_back(line.begin() + 1, line.end() - 2);
+            }
+        }
+    }
+    else
+    {
+        cout << "File failed to open problems file.\n";
+    }
+
+    return startStates;
 }
