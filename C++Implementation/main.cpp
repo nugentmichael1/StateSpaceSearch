@@ -22,7 +22,7 @@ Run default: If no parameters are provided, a set of default states and algorith
 #include <set>       //check uniqueness of characters of start and goal states
 #include <queue>     //bfs frontier, priority queue A*
 #include <stack>     //dfs, iddfs
-#include <stdio.h>  //remove file?
+#include <stdio.h>   //remove file?
 
 using namespace std;
 
@@ -245,8 +245,8 @@ class SSsearch
         // increment expand count.  may be able to just take size of expanded vector at end.
         this->expandCount += 1;
 
-        // cout << "expandAStar(): ";
-        // this->curState->print();
+        cout << "expandAStar(): ";
+        this->curState->print();
 
         // premptively add curState to expanded tracker
         this->expanded.emplace_back(this->curState);
@@ -569,8 +569,8 @@ public:
             this->itDdfs();
         else if (algo == "a*")
             this->aStar();
-        else if (algo == "a*ID")
-            this->aStarItDeep();
+        else if (algo == "iDA*")
+            this->iDAStar();
         else
             cout << "algorithm parameter string not recognized.\n";
 
@@ -584,11 +584,14 @@ public:
     void setHeuristicOOP()
     {
         this->heuristicType = "oOP";
+        this->start->estTtlCost = this->oOPDistance(this->start->perm);
+        // this->start->costSoFar = 0; //should already be 0
     }
 
     void setHeuristicMHD()
     {
         this->heuristicType = "mHD";
+        this->start->estTtlCost = this->manhattanDistance(this->start->perm);
     }
 
     // returns solution (move sequence)
@@ -710,8 +713,94 @@ public:
         }
     }
 
-    void aStarItDeep()
+    void iDAStar()
     {
+
+        // IDA* uses depth first search, which requires a FILO (stack) frontier
+        this->f = frontier("stack");
+
+        // get heuristic h(n) for start state: f(n) = g(n) + h(n)
+        this->start->estTtlCost = this->heuristic(this->start->perm);
+
+        // depth boundary is based on start state's h(n): f(n) = g(n) + h(n) = 0 + h(n) = h(n)
+        int fMax = this->start->estTtlCost;
+
+        // set minimum for unexpanded states f(n) distances to infinity
+        int fMin = INT32_MAX;
+
+        // debug
+        cout << "iDAStar() variables initialization\n";
+        cout << "this->curState->estTtlCost: " << this->curState->estTtlCost;
+        cout << "; fMax: " << fMax << "; fMin: " << fMin << "\n";
+
+        // priority_queue<state *, vector<state *>, pQCompare> pQ;
+
+        while (true)
+        {
+
+            // debug
+            // cout << "inside while loop of iDAStar()\n";
+            this->curState->print();
+            cout << "fMax: " << fMax << "\n";
+
+            // check if goal state found
+            if (this->curState->perm == this->goalPerm)
+            {
+                return;
+            }
+
+            // get heuristic: h(n)
+            int hn = this->heuristic(this->curState->perm);
+
+            // set state's g(n) based on level set in expand()
+            this->curState->costSoFar = this->curState->level;
+
+            // set estimated total cost: f(n) = g(n) + h(n)
+            this->curState->estTtlCost = hn + this->curState->costSoFar;
+
+            // only expand states below the depth boundary
+            if (this->curState->estTtlCost <= fMax)
+            {
+                // explore next states.  possibly add them to frontier.
+                this->expand();
+            }
+            else if (this->curState->estTtlCost < fMin)
+            {
+                // track minimum estimated cost from all set of all states that exceeded depth boundary
+                //  pQ.push(this->curState);
+                fMin = this->curState->estTtlCost;
+            }
+
+            // remove all occurences of recently expanded state from frontier
+            // this->f.removeAll(this->curState);
+
+            if (this->f.size() == 0)
+            {
+                // get minimum estimated distance from set of all nodes that were above the depth boundary
+                //  state *min = pQ.top();
+
+                // set new depth boundary
+                //  fMax = min->estTtlCost;
+                fMax = fMin;
+
+                // reset minimum rejected node distance to infinite
+                fMin = INT32_MAX;
+
+                // clear priority queue
+                //  pQ = priority_queue<state *, vector<state *>, pQCompare>();
+
+                // clear reached vector
+                this->reached = vector<state *>(1, this->start);
+
+                // reset current state to start state
+                this->curState = this->start;
+            }
+            else
+            {
+                // get next state from priority queue
+                this->curState = this->f.pop();
+            }
+        }
     }
 };
 
@@ -839,7 +928,7 @@ int main(int argc, char *argv[])
 {
     string startState = "123450786";
     string goalState = "123456780";
-    string algo = "a*";
+    string algo = "iDA*";
 
     if (argc > 3)
     {
@@ -853,13 +942,24 @@ int main(int argc, char *argv[])
         string outputFile("StateSpaceSearchResults.txt");
 
         // erase output file so it's clear for new results
-        if (remove("StateSpaceSearchResults.txt") != 0)
-        {
-            perror("Error deleting output file");
+        // if (remove("StateSpaceSearchResults.txt") != 0)
+        // {
+        //     perror("Error deleting output file");
+        // }
+        // else
+        // {
+        //     puts("Output file successfully deleted.");
+        // }
+
+        ofstream oFile(outputFile);
+        if(oFile.is_open()){
+                    oFile << "Goal State | Start State | Solution\n";
+        oFile << "---|---|---\n";
         }
         else{
-            puts("Output file successfully deleted.");
+            cout << "Failed to open " << outputFile << ".\n";
         }
+
 
         vector<string> startStates = getProblems(inputFile);
 
@@ -966,8 +1066,13 @@ vector<string> getProblems(string &inputFile)
     }
     else
     {
-        cout << "File failed to open problems file.\n";
+        cout << "Failed to open problems file.\n";
     }
 
     return startStates;
 }
+
+/*
+Start fMax higher.  At least 37 for the hard problems.  Probably closer to 100, though.
+Implement fMax tracker that records increases to output file.  If the program is closed program before it finds the solution, it can pick back up where it left off last.
+*/
