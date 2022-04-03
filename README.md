@@ -6,19 +6,19 @@ Term: Spring 2022
 Course Professor: David Ruby    
 College: CSU, Fresno    
 
-This is a C++ and JavaScript implementation of various state space search algorithms within a puzzle slider domain.  JavaScript is about tens times slower than C++, which means some of the algorithms like DFS will cause the browser to hang up with even minorly complex of problems.  The advantage to JavaScript is the visualization of the puzzle slider, and should be used for easier functionality like solution tests.  C++ is better for the actual search algorithms, especially DFS.
+This is a C++ and JavaScript implementation of various state space search algorithms within a puzzle slider domain.  JavaScript is about tens times slower than C++, which means some of the algorithms like DFS will cause the browser to hang up with even minorly complex problems.  The advantage to JavaScript is the visualization of the puzzle slider, and should be used for easier functionality like solution tests.  C++ is better for the actual search algorithms.
 
-Below were the provided instructions of the assignment.    
+Below are the provided instructions of the assignment.    
 
 
-## Provided Project Instructions
+## Project Instructions
 In this assignment you will explore State-Space Search with the 8-Puzzle and 15-Puzzle.  You will need to implement and provide code for the following algorithms:
 
 - [x] Breadth-First Search    
 - [x] Depth-First Search    
 - [x] Iterative-Deepening Depth-First Search    
 - [x] A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
-- [ ] Iterative Deepening A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
+- [x] Iterative Deepening A* w/ Out-Of-Place, and Manhattan Distance Heuristics    
 
 ### Develop search code with requirements:
 
@@ -40,35 +40,35 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 8 Puzzle
 Start State | Solution String | Algorithm
 --- | --- | --- 
-"160273485" | DDLUURDLLDRRUULDRD | A* w/ Manhattan Distance
-"462301587" | RDLURULLDRDLURULDRRULDDR | A* w/ Manhattan Distance
-"821574360"| <ul><li>LLURULDRDRULURDLLURDDRULLDRULDRR</li><li>LURULLDRULDDRURULDLURRDLURDD</li></ul> | <ul><li>?</li><li>A* w/ Manhattan Distance</li></ul>
-"840156372"|DLLURDLDRRULLURDDRUULDDR|A* w/ Manhattan Distance
-"530478126"|DLDLURDRUULDLURDDRULLDRR|A* w/ Manhattan Distance
-"068314257"|DRRULLDRDLURDRUULDLDRR|A* w/ Manhattan Distance
-"453207186"|RDLUULDDRUULDRDR|A* w/ Manhattan Distance
-"128307645"|LURDRULLDRDLURRDLURD|A* w/ Manhattan Distance
-"035684712"|RDLDRURDLULDRUULDDRURULDRD|A* w/ Manhattan Distance
-"684317025"|RURULLDDRURULLDDRRUULLDRDR|A* w/ Manhattan Distance
-"028514637"|DRRDLURULLDRDLURRDLUURDD|A* w/ Manhattan Distance
-"618273540"|LUULDRRULDDRUULLDDRULDRR|A* w/ Manhattan Distance
-"042385671"|DDRRULLURDDRUULDLURDRULDDR|A* w/ Manhattan Distance
-"420385716"|DLLURDDLURRULLDDRURD|A* w/ Manhattan Distance
-"054672813"|DRDLURURDLULDRRDLUURDLDR|A* w/ Manhattan Distance
-"314572680"|LULDRUULDRURDLULDRURDLDR|A* w/ Manhattan Distance
-"637218045"|RRUULDLURDRDLULDRRULDR|A* w/ Manhattan Distance
-"430621875"|DLURDLLDRULURRDDLURD|A* w/ Manhattan Distance
-"158274036"|URDRUULDDRULDLURDRUULDRD|A* w/ Manhattan Distance
-"130458726"|DLDRUULDDRULDR|A* w/ Manhattan Distance
+"160273485" | DDLUURDLLDRRUULDRD | A* w/ Out-Of-Place
+"462301587" | RDLURULLDRDLURULDRRULDDR | A* w/ Out-Of-Place
+"821574360"| <ul><li>LLURULDRDRULURDLLURDDRULLDRULDRR</li><li>LURULLDRULDDRURULDLURRDLURDD</li></ul> | <ul><li>?</li><li>A* w/ Out-Of-Place</li></ul>
+"840156372"|DLLURDLDRRULLURDDRUULDDR|A* w/ Out-Of-Place
+"530478126"|DLDLURDRUULDLURDDRULLDRR|A* w/ Out-Of-Place
+"068314257"|DRRULLDRDLURDRUULDLDRR|A* w/ Out-Of-Place
+"453207186"|RDLUULDDRUULDRDR|A* w/ Out-Of-Place
+"128307645"|LURDRULLDRDLURRDLURD|A* w/ Out-Of-Place
+"035684712"|RDLDRURDLULDRUULDDRURULDRD|A* w/ Out-Of-Place
+"684317025"|RURULLDDRURULLDDRRUULLDRDR|A* w/ Out-Of-Place
+"028514637"|DRRDLURULLDRDLURRDLUURDD|A* w/ Out-Of-Place
+"618273540"|LUULDRRULDDRUULLDDRULDRR|A* w/ Out-Of-Place
+"042385671"|DDRRULLURDDRUULDLURDRULDDR|A* w/ Out-Of-Place
+"420385716"|DLLURDDLURRULLDDRURD|A* w/ Out-Of-Place
+"054672813"|DRDLURURDLULDRRDLUURDLDR|A* w/ Out-Of-Place
+"314572680"|LULDRUULDRURDLULDRURDLDR|A* w/ Out-Of-Place
+"637218045"|RRUULDLURDRDLULDRRULDR|A* w/ Out-Of-Place
+"430621875"|DLURDLLDRULURRDDLURD|A* w/ Out-Of-Place
+"158274036"|URDRUULDDRULDLURDRUULDRD|A* w/ Out-Of-Place
+"130458726"|DLDRUULDDRULDR|A* w/ Out-Of-Place
 
 15 Puzzle - Easy   
 Start State | Solution String | Algorithm
 --- | --- | ---
 "16235A749C08DEBF"|LUURRDDLDR|Iterative Deepening DFS
-"0634217859ABDEFC"|<ul><li>RDLURDLDRRRD</li><li>DRULDDRRRD</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A* w/ Manhattan Distance</li></ul>
+"0634217859ABDEFC"|<ul><li>RDLURDLDRRRD</li><li>DRULDDRRRD</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A* w/ Out-Of-Place</li></ul>
 "012456379BC8DAEF"|RRDRDLLDRR|Iterative Deepening DFS
 "51246A38097BDEFC"|RULURRDDRD|Iterative Deepening DFS
-"12345678D9CFEBA0"|<ul><li>LURDLURDLLLURRDR</li><li>ULDLLURRDR</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A * w/ Manhattan Distance</li></ul>
+"12345678D9CFEBA0"|<ul><li>LURDLURDLLLURRDR</li><li>ULDLLURRDR</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A * w/ Out-Of-Place</li></ul>
 
 15 Puzzle - Difficult
 Start State | Solution String | Algorithm

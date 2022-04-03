@@ -541,7 +541,7 @@ class SSsearch
     }
 
 public:
-    SSsearch(string start, string goal, string algo) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start)
+    SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic)
     {
 
         // record that start state has been seen
@@ -581,18 +581,18 @@ public:
         this->reportResults();
     }
 
-    void setHeuristicOOP()
-    {
-        this->heuristicType = "oOP";
-        this->start->estTtlCost = this->oOPDistance(this->start->perm);
-        // this->start->costSoFar = 0; //should already be 0
-    }
+    // void setHeuristicOOP()
+    // {
+    //     this->heuristicType = "oOP";
+    //     this->start->estTtlCost = this->oOPDistance(this->start->perm);
+    //     // this->start->costSoFar = 0; //should already be 0
+    // }
 
-    void setHeuristicMHD()
-    {
-        this->heuristicType = "mHD";
-        this->start->estTtlCost = this->manhattanDistance(this->start->perm);
-    }
+    // void setHeuristicMHD()
+    // {
+    //     this->heuristicType = "mHD";
+    //     this->start->estTtlCost = this->manhattanDistance(this->start->perm);
+    // }
 
     // returns solution (move sequence)
     string getSolution()
@@ -735,13 +735,12 @@ public:
 
         // priority_queue<state *, vector<state *>, pQCompare> pQ;
 
+        // debug: delete previous fMax progress file
+        ofstream progress("Progress.txt");
+        progress.close();
+
         while (true)
         {
-
-            // debug
-            // cout << "inside while loop of iDAStar()\n";
-            this->curState->print();
-            cout << "fMax: " << fMax << "\n";
 
             // check if goal state found
             if (this->curState->perm == this->goalPerm)
@@ -771,6 +770,10 @@ public:
                 fMin = this->curState->estTtlCost;
             }
 
+            // debug
+            // cout << "inside while loop of iDAStar()\n";
+            // this->curState->print();
+            // cout << "fMax: " << fMax << "\n";
             // remove all occurences of recently expanded state from frontier
             // this->f.removeAll(this->curState);
 
@@ -782,6 +785,17 @@ public:
                 // set new depth boundary
                 //  fMax = min->estTtlCost;
                 fMax = fMin;
+
+                ofstream progress("Progress.txt", ios_base::app);
+                if (progress.is_open())
+                {
+                    progress << this->start->perm << "fMax: " << fMax << "\n";
+                }
+                else
+                    cout << "Failed to open Progress.txt.\n";
+
+                // this will automatically close when the variable loses scope, but doesn't hurt to be explicit
+                progress.close();
 
                 // reset minimum rejected node distance to infinite
                 fMin = INT32_MAX;
@@ -929,6 +943,7 @@ int main(int argc, char *argv[])
     string startState = "123450786";
     string goalState = "123456780";
     string algo = "iDA*";
+    string heuristic = "mHD";
 
     if (argc > 3)
     {
@@ -952,14 +967,15 @@ int main(int argc, char *argv[])
         // }
 
         ofstream oFile(outputFile);
-        if(oFile.is_open()){
-                    oFile << "Goal State | Start State | Solution\n";
-        oFile << "---|---|---\n";
+        if (oFile.is_open())
+        {
+            oFile << "Goal State | Start State | Solution\n";
+            oFile << "---|---|---\n";
         }
-        else{
+        else
+        {
             cout << "Failed to open " << outputFile << ".\n";
         }
-
 
         vector<string> startStates = getProblems(inputFile);
 
@@ -972,9 +988,9 @@ int main(int argc, char *argv[])
                 goalState = "123456789ABCDEF0";
             }
 
-            SSsearch s(a, goalState, algo);
+            SSsearch s(a, goalState, algo, heuristic);
             // s.setHeuristicOOP();
-            s.setHeuristicMHD();
+            // s.setHeuristicMHD();
             string solution = s.getSolution();
 
             if (verifySolution(a, goalState, solution))
@@ -987,22 +1003,23 @@ int main(int argc, char *argv[])
     else
     {
         //  Test Start States
-        startState = "120345786";
+        // startState = "120345786";
         //  startState = "203145786";
         //  startState = "123405786";
         //  startState = "123450786";
         //  startState = "023145786";
+        startState = "71A92CE03DB4658F";
 
         //  Test Goal States
-        goalState = "123456780";
-        //  goalState = "123456789ABCDEF0";
+        // goalState = "123456780";
+        goalState = "123456789ABCDEF0";
 
-        algo = "a*";
+        algo = "iDA*";
     }
 
-    SSsearch s(startState, goalState, algo);
+    SSsearch s(startState, goalState, algo, heuristic);
     // s.setHeuristicOOP();
-    s.setHeuristicMHD();
+    // s.setHeuristicMHD();
     string solution = s.getSolution();
     verifySolution(startState, goalState, solution);
 }
@@ -1073,6 +1090,6 @@ vector<string> getProblems(string &inputFile)
 }
 
 /*
-Start fMax higher.  At least 37 for the hard problems.  Probably closer to 100, though.
+Start fMax higher.  At least 38 for the hard problems.  Probably closer to 100, though.
 Implement fMax tracker that records increases to output file.  If the program is closed program before it finds the solution, it can pick back up where it left off last.
 */
