@@ -5,33 +5,40 @@ Professor: David Ruby
 Semester: Spring 2022
 School: CSU, Fresno
 
-Program Description: This is a C++ implementation of State Space Search algorithms within a Tile Slider Puzzle domain (8, and 15).  The implemented algorithms are three basics: breadth first search (bfs), depth first search (dfs), and iterative deepening dfs; and two advanced: A* with hueristics, and iterative deepening dfs with hueristics.
+Program Description: This is a C++ implementation of State Space Search algorithms within a Tile Slider Puzzle domain (8, and 15).  The implemented algorithms are three basics: breadth first search (BFS), depth first search (DFS), and iterative deepening dfs (IDDFS); and two advanced: A* with hueristics (A*), and iterative deepening dfs with hueristics (IDA*).
+Input: A list of start states can be provided by file name.  A pair of start state and goal state along with an algorithm can be provided.
+Output:  Depends on input.  Can produce a file of solutions to all supplied input states, or just print a single solution to the console.
 
 Compile: g++ main.cpp -o main.o
-Run: ./main.o <start state> <goal state> <algorithm>
-Run example: ./main.o "123450786" "123456780" "bfs"
-Run default: If no parameters are provided, a set of default states and algorithm are used, which can be modified within the driver (main function) of main.cpp.
+Run: There are three ways to run the program.  1) Supply three arguments to the command line: start state, goal state, and the desired algorithm.  2)  Supply to the command line just an input batch file of start states.  3) Supply no arguments.
+Run1: ./main.o <start state> <goal state> <algorithm>
+Run1 example: ./main.o "123450786" "123456780" "BFS"
+Run2: ./main.o <MyInputFile.txt>
+Run2 example: ./main.o "ProblemsList.txt"
+Run3: ./main.o
+If no parameters are provided, a set of default states and algorithm are used, which can be modified within the driver (main function) of main.cpp.
 */
 
-#include <fstream>   //read batch sequences or start states
-#include <iostream>  //display answers
-#include <vector>    //reached
-#include <string>    //state permutations
-#include <math.h>    //square root
-#include <algorithm> //sort
-#include <set>       //check uniqueness of characters of start and goal states
-#include <queue>     //bfs frontier, priority queue A*
-#include <stack>     //dfs, iddfs
-#include <stdio.h>   //remove file?
+#include <fstream>       //read batch sequences or start states
+#include <iostream>      //display answers to console
+#include <vector>        //reached, priority queue and stack?
+#include <string>        //state permutations
+#include <math.h>        //square root
+#include <algorithm>     //sort
+#include <set>           //check uniqueness of characters of start and goal states
+#include <queue>         //bfs frontier, A* priority queue
+#include <stack>         //dfs, iddfs, IDA*
+#include <unordered_map> //pattern database heuristic
 
 using namespace std;
 
+// state object.  conceptualizes all the atributes associated with a state.
 struct state
 {
-    string perm;
-    state *parent;
-    char movement;
-    int level = 0;
+    string perm;        // permutation (eg "123450786")
+    state *parent;      // pointer to parent state: the state found this one.
+    char movement;      // the move used to get from parent state to this one. (U,D,L,R) S is for start.
+    int level = 0;      // What depth has it reached.  Only used by iterative deepening dfs.  Also used by iterative deepening A* (although it probably shouldn't)
     int costSoFar = 0;  // acts same as level in tile-slider domain, but has different name for readability purposes.
     int estTtlCost = 0; // estimated total cost: f(n) = g(n) + h(n) = costSoFar + hueristic.
 
@@ -48,6 +55,7 @@ struct state
     }
 };
 
+// custom comparator for priority queue to use
 class pQCompare
 {
 public:
@@ -57,6 +65,7 @@ public:
     }
 };
 
+// used by A* to get rid of repeat entries on the frontier once one is expanded
 template <class T>
 class customPQ : public priority_queue<T, vector<T>, pQCompare>
 {
@@ -83,14 +92,16 @@ public:
 
 class frontier
 {
-    queue<state *> q;
-    stack<state *> stk;
-    customPQ<state *> pQ;
-    string type;
+    queue<state *> q;     // a queue object.  used by breadth first search (bfs)
+    stack<state *> stk;   // stack object.  used by depth first search (dfs), iterative deepening depth first search (iddfs), and iterative deepening A* (IDA*)
+    customPQ<state *> pQ; // priority queue with custom remove function.  Used by A*
+    string type;          // tracks which type frontier should use.
 
 public:
     frontier() {}
     frontier(string type) : type(type) {}
+
+    // push a state onto the frontier.  used by all algorithms.
     void push(state *s)
     {
         if (this->type == "queue")
@@ -106,6 +117,8 @@ public:
             this->pQ.push(s);
         }
     }
+
+    // take a state off the frontier and return it.  Used by all algorithms.
     state *pop()
     {
         if (this->type == "queue")
@@ -132,6 +145,8 @@ public:
             return NULL;
         }
     }
+
+    // check size of frontier.  Only useful for iterative deepening algorithms, and statistics.
     int size()
     {
         if (this->type == "queue")
@@ -148,6 +163,8 @@ public:
         }
         return 0;
     }
+
+    // only for priority queue, which is only used in A* (not IDA*).  gets rid of all states with the same representation since there is no descrimination against non-unique states until one is expanded.
     void removeAll(state *s)
     {
         if (this->type == "pQueue")
@@ -159,23 +176,22 @@ public:
         {
             cout << "frontier.remove() called by incorrect type.\n";
         }
-        // cout << "All instances of " << s->perm << " removed from frontier.\n";
     }
 };
 
 class SSsearch
 {
-    vector<state *> reached;
-    vector<state *> expanded; // only used for A* algorithms, replaces reached
-    // vector<state> frontier;
-    frontier f;
-    unsigned int expandCount = 0;
-    state *start;
-    state *curState;
-    string goalPerm;
-    int dimension;   // usually 3 or 4.
-    string solution; // sequence of movements.
-    string heuristicType = "oOP";
+    vector<state *> reached;              // tracks states seen already to avoid unnecessary expansions and memory use
+    vector<state *> expanded;             // only used for A* algorithms, replaces reached
+    frontier f;                           // frontier object.  based on algorithm, composed of a stack, queue, or priority queue.
+    unsigned int expandCount = 0;         // keep track of states expanded
+    state *start;                         // pointer to start state
+    state *curState;                      // pointer to current state.
+    string goalPerm;                      // goal state representation
+    int dimension;                        // usually 3 or 4.  sqrt(permutation length)
+    string solution;                      // sequence of movements.
+    string heuristicType = "oOP";         // default heuristic
+    unordered_map<string, int> patternDB; // hash table to use pattern database heuristic
 
     // opens up possible new states from current state, and adds to frontier if not seen before
     void expand()
@@ -186,7 +202,8 @@ class SSsearch
 
         // find zero (blank) tile index
         int zeroIndex = this->curState->perm.find('0');
-        // console.log("zeroIndex", this.zeroIndex);
+
+        // find coordinate of zero (blank) tile
         int zeroRow = floor(zeroIndex / this->dimension);
         int zeroCol = zeroIndex % this->dimension;
 
@@ -235,11 +252,9 @@ class SSsearch
             // this will check if the right move state has already been reached, and add it to reached and frontier, if not.
             this->checkReachedAddToFrontier(swapTargetIndex, 'R', zeroIndex);
         }
-
-        // console.log("reached", this.reached);
-        // console.log("frontier", this.frontier)
     }
 
+    // uses heuristic to find optimal solution
     void expandAStar()
     {
         // increment expand count.  may be able to just take size of expanded vector at end.
@@ -251,6 +266,7 @@ class SSsearch
         // premptively add curState to expanded tracker
         this->expanded.emplace_back(this->curState);
 
+        // identify coordinate of empty tile within puzzle slider
         int zeroIndex = this->curState->perm.find('0');
         int zeroRow = floor(zeroIndex / this->dimension);
         int zeroCol = zeroIndex % this->dimension;
@@ -302,15 +318,15 @@ class SSsearch
             // this will check if the right move state has already been reached, and add it to reached and frontier, if not.
             this->checkExpandedAddToFrontier(swapTargetIndex, 'R', zeroIndex);
         }
-
-        // console.log("reached", this.reached);
-        // console.log("frontier", this.frontier)
     }
 
+    // only used by A* (not the same as IDA*).  checks expanded vector instead of reached like the algorithms.
     void checkExpandedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
     {
-        // create array copy of curState and perform swap
+        // create array copy of curState
         string newStatePerm = this->curState->perm;
+
+        // perform swap so as to represent the new state
         newStatePerm[zeroIndex] = newStatePerm[swapTargetIndex];
         newStatePerm[swapTargetIndex] = '0';
 
@@ -330,14 +346,18 @@ class SSsearch
             // total estimated cost: f(n) = g(n) + h(n) = newCostSoFar + heuristicCost
             int ttlEstCost = newCostSoFar + heuristicCost;
 
-            // add new state to expanded and frontier
+            // create state to add to expanded and frontier
             state *s = new state(newStatePerm, this->curState, movement, newCostSoFar, ttlEstCost);
 
+            // add state to expanded vector
             this->expanded.emplace_back(s);
+
+            // add state to frontier
             this->f.push(s);
         }
     }
 
+    // determines which heuristic to use based on constructor argument
     int heuristic(string &perm)
     {
         int distance = 0;
@@ -346,6 +366,8 @@ class SSsearch
             return this->oOPDistance(perm);
         else if (this->heuristicType == "mHD")
             return this->manhattanDistance(perm);
+        else if (this->heuristicType == "pDB")
+            return this->patternDatabase();
         else
         {
             cout << "Heuristic type not recognized.";
@@ -353,6 +375,7 @@ class SSsearch
         }
     }
 
+    // heuristic: "out of place" - counts the number of tiles that are in a different position than goal state's representation
     int oOPDistance(string &perm)
     {
         int distance = 0;
@@ -367,6 +390,7 @@ class SSsearch
         return distance;
     }
 
+    // heuristic.  calculates distances of each tile from final state location and sums all together.
     int manhattanDistance(string &perm)
     {
         int totalDistance = 0;
@@ -398,7 +422,62 @@ class SSsearch
         return totalDistance;
     }
 
-    // utility function to clean up expand()
+    // heuristic
+    int patternDatabase()
+    {
+        // cout << "Pattern database size: " << this->patternDB.size() << "\n";
+        if (this->patternDB.size() == 0)
+        {
+            // create database
+            this->createPatternDatabase();
+        }
+
+        return 0;
+    }
+
+    void createPatternDatabase()
+    {
+        // take bottom row and right-most column.  Find number of moves to get solution with just regards to those tiles.
+        // Permutation = 16!/9! (not sure how blank tile in non-fringe areas contributes to search space)
+
+        int totalPermutations = 1;
+        int n = pow(this->dimension, 2);
+        int r = this->dimension * 2 - 1;
+
+        cout << "dimension: " << this->dimension << "\n";
+
+        // calculate total permutations, simulate factorial
+        for (int i = n; i > n - r; i--)
+        {
+            cout << "i: " << i << " n: " << n << "; r: " << r << "\n";
+            totalPermutations *= i;
+        }
+
+        cout << "totalPermutations: " << totalPermutations << "\n";
+
+        // cout << "sizeof(int): " << sizeof(long int) << "\n";
+
+        for (int i = 0; i < totalPermutations; i++)
+        {
+            string perm("");
+            int distance = 0;
+
+            // build permutation
+            for (int j = 0; j < n; j++)
+            {
+            }
+
+            // add permutation's distance to table
+            // this->patternDB.insert({perm, distance});
+        }
+        cout << "Finished createPatternDatabase()\n";
+        // for (int i = 0; i < this->dimension; i++)
+        // {
+        //     // perm += this->
+        // }
+    }
+
+    // utility function to condense expand()
     void checkReachedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
     {
 
@@ -510,23 +589,30 @@ class SSsearch
 
         // current state should be at goal state when this function is called
         this->solution = string(1, this->curState->movement);
+
+        // second link in the state sequence
         state *cur = this->curState->parent;
 
         // case where start state is goal state
         if (!cur)
             return;
 
+        // follow parents until start state is reached.
         while (cur->parent != NULL)
         {
 
-            cur->print();
+            // debug: helps identify sequence origin
+            // cur->print();
 
+            // record movement used to get to this state from parent
             this->solution += cur->movement;
+
+            // update current state pointer to parent of current
             cur = cur->parent;
         }
 
-        // print start state
-        cur->print();
+        // debug: print start state
+        // cur->print();
 
         // reverse the solution string
         reverse(this->solution.begin(), this->solution.end());
@@ -538,66 +624,6 @@ class SSsearch
         cout << "Start State: " << this->start->perm << "; Goal state: " << this->goalPerm << "; Solution: " << this->solution << "\n";
 
         cout << "Expanded Count: " << this->expandCount << "; Frontier Size: " << this->f.size() << "; Reached Size: " << this->reached.size() << "\n";
-    }
-
-public:
-    SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic)
-    {
-
-        // record that start state has been seen
-        this->reached.emplace_back(this->start);
-
-        // set dimension (e.g. 3x3 or 4x4)
-        this->dimension = sqrt(this->start->perm.length());
-
-        // verify start and goal states are in a valid format
-        if (!this->validateInput("start"))
-            return;
-        if (!this->validateInput("goal"))
-            return;
-
-        // check start and goal are of same length
-        if (this->start->perm.length() != this->goalPerm.length())
-            return;
-
-        // call appropriate search algorithm
-        if (algo == "bfs")
-            this->bfs();
-        else if (algo == "dfs")
-            this->dfs();
-        else if (algo == "itDdfs")
-            this->itDdfs();
-        else if (algo == "a*")
-            this->aStar();
-        else if (algo == "iDA*")
-            this->iDAStar();
-        else
-            cout << "algorithm parameter string not recognized.\n";
-
-        // get move sequence (aka solution)
-        this->traceBack();
-
-        // notify console of results
-        this->reportResults();
-    }
-
-    // void setHeuristicOOP()
-    // {
-    //     this->heuristicType = "oOP";
-    //     this->start->estTtlCost = this->oOPDistance(this->start->perm);
-    //     // this->start->costSoFar = 0; //should already be 0
-    // }
-
-    // void setHeuristicMHD()
-    // {
-    //     this->heuristicType = "mHD";
-    //     this->start->estTtlCost = this->manhattanDistance(this->start->perm);
-    // }
-
-    // returns solution (move sequence)
-    string getSolution()
-    {
-        return this->solution;
     }
 
     // breadth first search
@@ -643,8 +669,10 @@ public:
     void itDdfs()
     {
 
+        // initialize the depth boundary to 1.  this will progressively increase until a solution is found.
         int depthBound = 1;
 
+        // initialize frontier with a stack implementation
         this->f = frontier("stack");
 
         while (true)
@@ -658,33 +686,33 @@ public:
 
             // check curState for appropriate depth before expansion.
             if (this->curState->level < depthBound)
-            { // expand current state
+            {
+                // expand current state
                 this->expand();
             }
 
-            // ensure frontier has states
+            // check whether frontier has states
             if (this->f.size() == 0)
             {
+                // frontier stack is empty.
 
                 //  increment depth boundary by 1 and reset everything
                 depthBound += 1;
 
-                // debug:
-                cout << "Increased depth boundary to: " << depthBound << "\n";
-
-                // debug: limit depth for analysis purposes
-                //  if (depthBound > 10)
-                //      return;
-
-                // should clear reached array of all but the start state
+                // clear reached array of all but the start state
                 this->reached = vector<state *>(1, this->start);
 
-                this->f = frontier("stack"); // technically this was already empty by this point.
+                // technically this is already empty by this point.  Might remove.
+                this->f = frontier("stack");
 
+                // set current state back to start so iteration can begin again
                 this->curState = this->start;
             }
             else
             {
+                // frontier still has states left.
+
+                // pop a state off the stack.
                 this->curState = this->f.pop();
             }
         }
@@ -708,6 +736,12 @@ public:
             // remove all occurences of recently expanded state from frontier
             this->f.removeAll(this->curState);
 
+            // debug:
+            cout << "A*: most recently expanded state\n";
+            this->curState->print();
+            cout << "Expanded count:" << this->expandCount << "\n";
+            cout << "Priority Queue size: " << this->f.size() << "\n";
+
             // get next state from priority queue
             this->curState = this->f.pop();
         }
@@ -728,16 +762,22 @@ public:
         // set minimum for unexpanded states f(n) distances to infinity
         int fMin = INT32_MAX;
 
-        // debug
-        cout << "iDAStar() variables initialization\n";
-        cout << "this->curState->estTtlCost: " << this->curState->estTtlCost;
-        cout << "; fMax: " << fMax << "; fMin: " << fMin << "\n";
-
-        // priority_queue<state *, vector<state *>, pQCompare> pQ;
+        // // debug
+        // cout << "iDAStar() variables initialization\n";
+        // cout << "this->curState->estTtlCost: " << this->curState->estTtlCost;
+        // cout << "; fMax: " << fMax << "; fMin: " << fMin << "\n";
 
         // debug: delete previous fMax progress file
         ofstream progress("Progress.txt");
+
+        // add header to new progress file
+        progress << this->start->perm << "\n";
+
+        // close just to conserve resources.
         progress.close();
+
+        // debug:
+        int statesExpandedCntPerIteration = 0;
 
         while (true)
         {
@@ -762,46 +802,42 @@ public:
             {
                 // explore next states.  possibly add them to frontier.
                 this->expand();
+                statesExpandedCntPerIteration++;
             }
             else if (this->curState->estTtlCost < fMin)
             {
-                // track minimum estimated cost from all set of all states that exceeded depth boundary
-                //  pQ.push(this->curState);
+                // track minimum estimated cost from set of all states that exceeded depth boundary
                 fMin = this->curState->estTtlCost;
             }
 
-            // debug
-            // cout << "inside while loop of iDAStar()\n";
-            // this->curState->print();
-            // cout << "fMax: " << fMax << "\n";
-            // remove all occurences of recently expanded state from frontier
-            // this->f.removeAll(this->curState);
-
             if (this->f.size() == 0)
             {
-                // get minimum estimated distance from set of all nodes that were above the depth boundary
-                //  state *min = pQ.top();
 
                 // set new depth boundary
-                //  fMax = min->estTtlCost;
                 fMax = fMin;
 
+                // this is to keep progress report on hard problems since they take so long.  updates a file with the latest depth iteration reached.
                 ofstream progress("Progress.txt", ios_base::app);
                 if (progress.is_open())
                 {
-                    progress << this->start->perm << "fMax: " << fMax << "\n";
+                    progress << "fMax: " << fMax << "\n";
+                    progress << "States Expanded this iteration: " << statesExpandedCntPerIteration << "\n";
                 }
                 else
                     cout << "Failed to open Progress.txt.\n";
 
-                // this will automatically close when the variable loses scope, but doesn't hurt to be explicit
+                // this will automatically close when the variable loses scope, but doesn't hurt to be explicit?
                 progress.close();
+
+                // debug
+                // cout << "Last state of iteration's stats:\n";
+                // this->curState->print();
+                // cout << "States expanded this iteration: " << statesExpandedCntPerIteration << "\n";
+
+                statesExpandedCntPerIteration = 0;
 
                 // reset minimum rejected node distance to infinite
                 fMin = INT32_MAX;
-
-                // clear priority queue
-                //  pQ = priority_queue<state *, vector<state *>, pQCompare>();
 
                 // clear reached vector
                 this->reached = vector<state *>(1, this->start);
@@ -816,8 +852,56 @@ public:
             }
         }
     }
+
+public:
+    SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic)
+    {
+
+        // record that start state has been seen
+        this->reached.emplace_back(this->start);
+
+        // set dimension (e.g. 3x3 or 4x4)
+        this->dimension = sqrt(this->start->perm.length());
+
+        // verify start and goal states are in a valid format
+        if (!this->validateInput("start"))
+            return;
+        if (!this->validateInput("goal"))
+            return;
+
+        // check start and goal are of same length
+        if (this->start->perm.length() != this->goalPerm.length())
+            return;
+
+        // call appropriate search algorithm
+        if (algo == "BFS")
+            this->bfs();
+        else if (algo == "DFS")
+            this->dfs();
+        else if (algo == "IDDFS")
+            this->itDdfs();
+        else if (algo == "A*")
+            this->aStar();
+        else if (algo == "IDA*")
+            this->iDAStar();
+        else
+            cout << "algorithm parameter string not recognized.\n";
+
+        // get move sequence (aka solution)
+        this->traceBack();
+
+        // notify console of results
+        this->reportResults();
+    }
+
+    // returns solution (move sequence)
+    string getSolution()
+    {
+        return this->solution;
+    }
 };
 
+// tests solutions.  Walks through move a sequence from a start state and identifies its final state.
 class test
 {
     string start;
@@ -940,66 +1024,75 @@ vector<string> getProblems(string &inputFile);
 
 int main(int argc, char *argv[])
 {
+    // default variable initilizations
     string startState = "123450786";
     string goalState = "123456780";
-    string algo = "iDA*";
-    string heuristic = "mHD";
+    string algo = "IDA*";
+    string heuristic = "pDB";
 
+    // run 1
     if (argc > 3)
     {
         startState = argv[1];
         goalState = argv[2];
         algo = argv[3];
     }
+
+    // run 2
     else if (argc == 2)
     {
         string inputFile(argv[1]);
         string outputFile("StateSpaceSearchResults.txt");
 
-        // erase output file so it's clear for new results
-        // if (remove("StateSpaceSearchResults.txt") != 0)
-        // {
-        //     perror("Error deleting output file");
-        // }
-        // else
-        // {
-        //     puts("Output file successfully deleted.");
-        // }
-
+        // create output file.  erases previous output files, too.
         ofstream oFile(outputFile);
+
+        // check that file was opened
         if (oFile.is_open())
         {
+            // add header to file.
             oFile << "Goal State | Start State | Solution\n";
             oFile << "---|---|---\n";
+            oFile.close();
         }
         else
         {
             cout << "Failed to open " << outputFile << ".\n";
         }
 
+        // gets list of start states from an input file
         vector<string> startStates = getProblems(inputFile);
 
+        // run through all the start states and perform a search for goal state from initial state
         for (auto a : startStates)
         {
+            // default goal state
             string goalState = "123456780";
 
+            // goal state for 4x4 dimension
             if (a.length() == 16)
             {
                 goalState = "123456789ABCDEF0";
             }
 
+            // initialize search object, which automatically starts the search
             SSsearch s(a, goalState, algo, heuristic);
-            // s.setHeuristicOOP();
-            // s.setHeuristicMHD();
+
+            // get solution.
             string solution = s.getSolution();
 
+            // verify the solution is accurate with the tester class
             if (verifySolution(a, goalState, solution))
             {
-                // adds result to output file
+                // add result to output file
                 printToFile(a, goalState, solution, outputFile);
             }
         }
+
+        return 0;
     }
+
+    // run 3
     else
     {
         //  Test Start States
@@ -1014,24 +1107,37 @@ int main(int argc, char *argv[])
         // goalState = "123456780";
         goalState = "123456789ABCDEF0";
 
-        algo = "iDA*";
+        algo = "IDA*";
     }
 
+    // used by run 1 and 3
+
+    // create search object, whcih runs search algorithm upon initialization
     SSsearch s(startState, goalState, algo, heuristic);
-    // s.setHeuristicOOP();
-    // s.setHeuristicMHD();
+
+    // get solution found by search algorithm
     string solution = s.getSolution();
+
+    // verify the solution is accurate
     verifySolution(startState, goalState, solution);
+
+    return 0;
 }
 
 bool verifySolution(string &startState, string &goalState, string &solution)
 {
+    // tester object.  takes start state and move sequence.
     test t1(startState, solution);
+
+    // get final state from tester algorithm.
     string outputState = t1.outputState();
+
+    // output to console to inform user
     cout << "-- Solution Test --\nOutput State: " << outputState << "\n";
     cout << "Goal State:   " << goalState << "\n";
     cout << "Solution ";
 
+    // check if final state provided by move sequence matches the provided goal state
     if (outputState == goalState)
     {
         cout << "Passes\n\n";
@@ -1050,10 +1156,12 @@ void printToFile(string &start, string &goal, string &solution, string &fileName
 
     if (resultsFile.is_open())
     {
+        // github readme table format: goal | start | solution
         resultsFile << goal << "|";
         resultsFile << "\"" << start << "\"";
         resultsFile << "|" << solution << "\n";
 
+        // close file
         resultsFile.close();
     }
     else
@@ -1090,6 +1198,7 @@ vector<string> getProblems(string &inputFile)
 }
 
 /*
-Start fMax higher.  At least 38 for the hard problems.  Probably closer to 100, though.
-Implement fMax tracker that records increases to output file.  If the program is closed program before it finds the solution, it can pick back up where it left off last.
+Notes:
+Start fMax higher.  At least 56 for the first hard problem.  Probably closer to 100, though.
+Implemented fMax tracker that records increases to output file.  If the program is closed before it finds the solution, the data can be used to start it back up where it left off last.
 */
