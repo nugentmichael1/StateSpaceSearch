@@ -366,8 +366,8 @@ class SSsearch
             return this->oOPDistance(perm);
         else if (this->heuristicType == "mHD")
             return this->manhattanDistance(perm);
-        else if (this->heuristicType == "pDB")
-            return this->patternDatabase();
+        // else if (this->heuristicType == "pDB")
+        //     return this->patternDatabase();
         else
         {
             cout << "Heuristic type not recognized.";
