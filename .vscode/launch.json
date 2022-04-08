@@ -9,7 +9,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${fileDirname}/${fileBasenameNoExtension}",
-        "args": ["ProblemsList.txt"],
+        "args": ["HardProblems.txt"],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
         "environment": [],

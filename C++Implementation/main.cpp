@@ -398,84 +398,88 @@ class SSsearch
         for (int i = 0; i < perm.length(); i++)
         {
 
-            // determine target index
-            int currentValue = perm[i];
-            string::iterator it = find(this->goalPerm.begin(), this->goalPerm.end(), currentValue);
-            int targetIndex = it - this->goalPerm.begin();
+            if (perm[i] != '*')
+            {
+                // determine target index
+                int currentValue = perm[i];
+                string::iterator it = find(this->goalPerm.begin(), this->goalPerm.end(), currentValue);
+                int targetIndex = it - this->goalPerm.begin();
 
-            // determine coordinates of current position
-            int currentRow = i / this->dimension;
-            int currentCol = i % this->dimension;
+                // determine coordinates of current position
+                int currentRow = i / this->dimension;
+                int currentCol = i % this->dimension;
 
-            // determine coordinates of target position
-            int targetRow = targetIndex / this->dimension;
-            int targetCol = targetIndex % this->dimension;
+                // determine coordinates of target position
+                int targetRow = targetIndex / this->dimension;
+                int targetCol = targetIndex % this->dimension;
 
-            // determine how many moves must be made per dimension
-            int horizontal = abs(currentCol - targetCol);
-            int vertical = abs(currentRow - targetRow);
+                // determine how many moves must be made per dimension
+                int horizontal = abs(currentCol - targetCol);
+                int vertical = abs(currentRow - targetRow);
 
-            // add both dimension distances to total distance
-            totalDistance += horizontal + vertical;
+                // add both dimension distances to total distance
+                totalDistance += horizontal + vertical;
+            }
         }
 
         return totalDistance;
     }
 
-    // heuristic
-    int patternDatabase()
-    {
-        // cout << "Pattern database size: " << this->patternDB.size() << "\n";
-        if (this->patternDB.size() == 0)
-        {
-            // create database
-            this->createPatternDatabase();
-        }
+    //failed attempt at pattern database heuristic
+    // // heuristic
+    // int patternDatabase()
+    // {
+    //     // cout << "Pattern database size: " << this->patternDB.size() << "\n";
+    //     if (this->patternDB.size() == 0)
+    //     {
+    //         // create database
+    //         this->createPatternDatabase();
+    //     }
 
-        return 0;
-    }
+    //     return 0;
+    // }
 
-    void createPatternDatabase()
-    {
-        // take bottom row and right-most column.  Find number of moves to get solution with just regards to those tiles.
-        // Permutation = 16!/9! (not sure how blank tile in non-fringe areas contributes to search space)
+    // void createPatternDatabase()
+    // {
+    //     // take bottom row and right-most column.  Find number of moves to get solution with just regards to those tiles.
+    //     // Permutation = 16!/9! (not sure how blank tile in non-fringe areas contributes to search space)
 
-        int totalPermutations = 1;
-        int n = pow(this->dimension, 2);
-        int r = this->dimension * 2 - 1;
+    //     int totalPermutations = 1;
+    //     int n = pow(this->dimension, 2);
+    //     int r = this->dimension * 2 - 1;
 
-        cout << "dimension: " << this->dimension << "\n";
+    //     cout << "dimension: " << this->dimension << "\n";
 
-        // calculate total permutations, simulate factorial
-        for (int i = n; i > n - r; i--)
-        {
-            cout << "i: " << i << " n: " << n << "; r: " << r << "\n";
-            totalPermutations *= i;
-        }
+    //     // calculate total permutations, simulate factorial
+    //     for (int i = n; i > n - r; i--)
+    //     {
+    //         cout << "i: " << i << " n: " << n << "; r: " << r << "\n";
+    //         totalPermutations *= i;
+    //     }
 
-        cout << "totalPermutations: " << totalPermutations << "\n";
+    //     cout << "totalPermutations: " << totalPermutations << "\n";
 
-        // cout << "sizeof(int): " << sizeof(long int) << "\n";
+    //     // cout << "sizeof(int): " << sizeof(long int) << "\n";
 
-        for (int i = 0; i < totalPermutations; i++)
-        {
-            string perm("");
-            int distance = 0;
+    //     for (int i = 0; i < totalPermutations; i++)
+    //     {
+    //         string perm("");
+    //         int distance = 0;
 
-            // build permutation
-            for (int j = 0; j < n; j++)
-            {
-            }
+    //         // build permutation
+    //         for (int j = 0; j < n; j++)
+    //         {
+    //         }
 
-            // add permutation's distance to table
-            // this->patternDB.insert({perm, distance});
-        }
-        cout << "Finished createPatternDatabase()\n";
-        // for (int i = 0; i < this->dimension; i++)
-        // {
-        //     // perm += this->
-        // }
-    }
+    //         // add permutation's distance to table
+    //         // this->patternDB.insert({perm, distance});
+    //     }
+    //     cout << "Finished createPatternDatabase()\n";
+    //     // for (int i = 0; i < this->dimension; i++)
+    //     // {
+    //     //     // perm += this->
+    //     // }
+    // }
 
     // utility function to condense expand()
     void checkReachedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
@@ -1201,4 +1205,7 @@ vector<string> getProblems(string &inputFile)
 Notes:
 Start fMax higher.  At least 56 for the first hard problem.  Probably closer to 100, though.
 Implemented fMax tracker that records increases to output file.  If the program is closed before it finds the solution, the data can be used to start it back up where it left off last.
+
+
+Make pattern database heuristic its own class, and feed the same object to each search implementation so as to not waste the creation time.  "Ameliorate" the initial cost over multiple problems.
 */

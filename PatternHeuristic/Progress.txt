@@ -1,0 +1,45 @@
+***6***5***40123
+fMax: 39
+States Expanded this iteration: 5
+fMax: 40
+States Expanded this iteration: 6
+fMax: 41
+States Expanded this iteration: 13
+fMax: 42
+States Expanded this iteration: 30
+fMax: 43
+States Expanded this iteration: 55
+fMax: 44
+States Expanded this iteration: 77
+fMax: 45
+States Expanded this iteration: 127
+fMax: 46
+States Expanded this iteration: 211
+fMax: 47
+States Expanded this iteration: 305
+fMax: 48
+States Expanded this iteration: 423
+fMax: 49
+States Expanded this iteration: 641
+fMax: 50
+States Expanded this iteration: 856
+fMax: 51
+States Expanded this iteration: 1310
+fMax: 52
+States Expanded this iteration: 2197
+fMax: 53
+States Expanded this iteration: 2144
+fMax: 54
+States Expanded this iteration: 4159
+fMax: 55
+States Expanded this iteration: 5338
+fMax: 56
+States Expanded this iteration: 6345
+fMax: 57
+States Expanded this iteration: 17693
+fMax: 58
+States Expanded this iteration: 14288
+fMax: 59
+States Expanded this iteration: 19951
+fMax: 60
+States Expanded this iteration: 33929

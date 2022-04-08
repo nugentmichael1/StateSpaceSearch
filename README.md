@@ -34,7 +34,7 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 
 ### Provide link to Github repository with all code, and submit final report as PDF with requirements:
 
-- [ ] Provide overview of your code.
+- [x] Provide overview of your code.
 - [ ] Provide results for the following problems:
 
 8 Puzzle
