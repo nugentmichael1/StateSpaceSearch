@@ -29,6 +29,7 @@ If no parameters are provided, a set of default states and algorithm are used, w
 #include <queue>         //bfs frontier, A* priority queue
 #include <stack>         //dfs, iddfs, IDA*
 #include <unordered_map> //pattern database heuristic
+#include <chrono>        //clock time
 
 using namespace std;
 
@@ -192,6 +193,11 @@ class SSsearch
     string solution;                      // sequence of movements.
     string heuristicType = "oOP";         // default heuristic
     unordered_map<string, int> patternDB; // hash table to use pattern database heuristic
+    string algo;                          // algorithm used
+    chrono::high_resolution_clock::time_point startTime;
+    chrono::high_resolution_clock::time_point endTime;
+    // chrono::duration<int> durationTime;
+    double durationTime;
 
     // opens up possible new states from current state, and adds to frontier if not seen before
     void expand()
@@ -398,88 +404,87 @@ class SSsearch
         for (int i = 0; i < perm.length(); i++)
         {
 
-            if (perm[i] != '*')
-            {
-                // determine target index
-                int currentValue = perm[i];
-                string::iterator it = find(this->goalPerm.begin(), this->goalPerm.end(), currentValue);
-                int targetIndex = it - this->goalPerm.begin();
+            // determine target index
+            int currentValue = perm[i];
+            string::iterator it = find(this->goalPerm.begin(), this->goalPerm.end(), currentValue);
+            int targetIndex = it - this->goalPerm.begin();
 
-                // determine coordinates of current position
-                int currentRow = i / this->dimension;
-                int currentCol = i % this->dimension;
+            // determine coordinates of current position
+            int currentRow = i / this->dimension;
+            int currentCol = i % this->dimension;
 
-                // determine coordinates of target position
-                int targetRow = targetIndex / this->dimension;
-                int targetCol = targetIndex % this->dimension;
+            // determine coordinates of target position
+            int targetRow = targetIndex / this->dimension;
+            int targetCol = targetIndex % this->dimension;
 
-                // determine how many moves must be made per dimension
-                int horizontal = abs(currentCol - targetCol);
-                int vertical = abs(currentRow - targetRow);
+            // determine how many moves must be made per dimension
+            int horizontal = abs(currentCol - targetCol);
+            int vertical = abs(currentRow - targetRow);
 
-                // add both dimension distances to total distance
-                totalDistance += horizontal + vertical;
-            }
+            // add both dimension distances to total distance
+            totalDistance += horizontal + vertical;
         }
 
         return totalDistance;
     }
 
-    //failed attempt at pattern database heuristic
-    // // heuristic
-    // int patternDatabase()
-    // {
-    //     // cout << "Pattern database size: " << this->patternDB.size() << "\n";
-    //     if (this->patternDB.size() == 0)
-    //     {
-    //         // create database
-    //         this->createPatternDatabase();
-    //     }
+/*    failed attempt at pattern database heuristic
 
-    //     return 0;
-    // }
+     // heuristic
+     int patternDatabase()
+     {
+         // cout << "Pattern database size: " << this->patternDB.size() << "\n";
+         if (this->patternDB.size() == 0)
+         {
+             // create database
+             this->createPatternDatabase();
+         }
 
-    // void createPatternDatabase()
-    // {
-    //     // take bottom row and right-most column.  Find number of moves to get solution with just regards to those tiles.
-    //     // Permutation = 16!/9! (not sure how blank tile in non-fringe areas contributes to search space)
+        return 0;
+    }
 
-    //     int totalPermutations = 1;
-    //     int n = pow(this->dimension, 2);
-    //     int r = this->dimension * 2 - 1;
+    void createPatternDatabase()
+    {
+        // take bottom row and right-most column.  Find number of moves to get solution with just regards to those tiles.
+        // Permutation = 16!/9! (not sure how blank tile in non-fringe areas contributes to search space)
 
-    //     cout << "dimension: " << this->dimension << "\n";
+        int totalPermutations = 1;
+        int n = pow(this->dimension, 2);
+        int r = this->dimension * 2 - 1;
 
-    //     // calculate total permutations, simulate factorial
-    //     for (int i = n; i > n - r; i--)
-    //     {
-    //         cout << "i: " << i << " n: " << n << "; r: " << r << "\n";
-    //         totalPermutations *= i;
-    //     }
+        cout << "dimension: " << this->dimension << "\n";
 
-    //     cout << "totalPermutations: " << totalPermutations << "\n";
+        // calculate total permutations, simulate factorial
+        for (int i = n; i > n - r; i--)
+        {
+            cout << "i: " << i << " n: " << n << "; r: " << r << "\n";
+            totalPermutations *= i;
+        }
 
-    //     // cout << "sizeof(int): " << sizeof(long int) << "\n";
+        cout << "totalPermutations: " << totalPermutations << "\n";
 
-    //     for (int i = 0; i < totalPermutations; i++)
-    //     {
-    //         string perm("");
-    //         int distance = 0;
+        // cout << "sizeof(int): " << sizeof(long int) << "\n";
 
-    //         // build permutation
-    //         for (int j = 0; j < n; j++)
-    //         {
-    //         }
+        for (int i = 0; i < totalPermutations; i++)
+        {
+            string perm("");
+            int distance = 0;
 
-    //         // add permutation's distance to table
-    //         // this->patternDB.insert({perm, distance});
-    //     }
-    //     cout << "Finished createPatternDatabase()\n";
-    //     // for (int i = 0; i < this->dimension; i++)
-    //     // {
-    //     //     // perm += this->
-    //     // }
-    // }
+            // build permutation
+            for (int j = 0; j < n; j++)
+            {
+            }
+
+            // add permutation's distance to table
+            // this->patternDB.insert({perm, distance});
+        }
+        cout << "Finished createPatternDatabase()\n";
+        // for (int i = 0; i < this->dimension; i++)
+        // {
+        //     // perm += this->
+        // }
+    }
+    */
 
     // utility function to condense expand()
     void checkReachedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
@@ -620,6 +625,10 @@ class SSsearch
 
         // reverse the solution string
         reverse(this->solution.begin(), this->solution.end());
+
+        this->endTime = chrono::high_resolution_clock::now();
+        this->durationTime = double(chrono::duration_cast<chrono::milliseconds>(this->endTime - this->startTime).count());
+        this->durationTime/=1000;
     }
 
     // Reports results to console.
@@ -858,7 +867,7 @@ class SSsearch
     }
 
 public:
-    SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic)
+    SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic), algo(algo), startTime(chrono::high_resolution_clock::now())
     {
 
         // record that start state has been seen
@@ -902,6 +911,27 @@ public:
     string getSolution()
     {
         return this->solution;
+    }
+
+    string getStart()
+    {
+        return this->start->perm;
+    }
+    string getGoal()
+    {
+        return this->goalPerm;
+    }
+    int getExpanded()
+    {
+        return this->expandCount;
+    }
+    string getAlgo()
+    {
+        return this->algo;
+    }
+    // chrono::duration<int> getClockTime(){
+    double getClockTime(){
+        return this->durationTime;
     }
 };
 
@@ -1022,7 +1052,8 @@ public:
 
 bool verifySolution(string &start, string &goal, string &solution);
 
-void printToFile(string &start, string &goal, string &solution, string &fileName);
+// void printToFile(string &start, string &goal, string &solution, string &fileName);
+void printToFile(SSsearch &s, string &fileName);
 
 vector<string> getProblems(string &inputFile);
 
@@ -1032,7 +1063,7 @@ int main(int argc, char *argv[])
     string startState = "123450786";
     string goalState = "123456780";
     string algo = "IDA*";
-    string heuristic = "pDB";
+    string heuristic = "mHD";
 
     // run 1
     if (argc > 3)
@@ -1055,8 +1086,8 @@ int main(int argc, char *argv[])
         if (oFile.is_open())
         {
             // add header to file.
-            oFile << "Goal State | Start State | Solution\n";
-            oFile << "---|---|---\n";
+            oFile << "Start State | Algorithm | Nodes Expanded | Clock Time | Solution\n";
+            oFile << "---|---|---|---|---\n";
             oFile.close();
         }
         else
@@ -1089,7 +1120,7 @@ int main(int argc, char *argv[])
             if (verifySolution(a, goalState, solution))
             {
                 // add result to output file
-                printToFile(a, goalState, solution, outputFile);
+                printToFile(s, outputFile);
             }
         }
 
@@ -1100,16 +1131,16 @@ int main(int argc, char *argv[])
     else
     {
         //  Test Start States
-        // startState = "120345786";
+        startState = "120345786";
         //  startState = "203145786";
         //  startState = "123405786";
         //  startState = "123450786";
         //  startState = "023145786";
-        startState = "71A92CE03DB4658F";
+        // startState = "71A92CE03DB4658F";
 
         //  Test Goal States
-        // goalState = "123456780";
-        goalState = "123456789ABCDEF0";
+        goalState = "123456780";
+        // goalState = "123456789ABCDEF0";
 
         algo = "IDA*";
     }
@@ -1154,16 +1185,20 @@ bool verifySolution(string &startState, string &goalState, string &solution)
     }
 }
 
-void printToFile(string &start, string &goal, string &solution, string &fileName)
+// void printToFile(string &start, string &goal, string &solution, string &fileName)
+void printToFile(SSsearch &s, string &fileName)
 {
     ofstream resultsFile(fileName, ofstream::app);
 
     if (resultsFile.is_open())
     {
+        // oFile << "Start State | Algorithm | Nodes Expanded | Clock Time | Solution\n";
+        resultsFile << s.getStart() << "|" << s.getAlgo() << "|" << s.getExpanded() << "|" << s.getClockTime() << " seconds|" << s.getSolution() << "\n";
+
         // github readme table format: goal | start | solution
-        resultsFile << goal << "|";
-        resultsFile << "\"" << start << "\"";
-        resultsFile << "|" << solution << "\n";
+        // resultsFile << goal << "|";
+        // resultsFile << "\"" << start << "\"";
+        // resultsFile << "|" << solution << "\n";
 
         // close file
         resultsFile.close();
@@ -1201,8 +1236,7 @@ vector<string> getProblems(string &inputFile)
     return startStates;
 }
 
-/*
-Notes:
+/* Notes for hard problems:
 Start fMax higher.  At least 56 for the first hard problem.  Probably closer to 100, though.
 Implemented fMax tracker that records increases to output file.  If the program is closed before it finds the solution, the data can be used to start it back up where it left off last.
 

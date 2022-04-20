@@ -1,2 +1,4 @@
-Goal State | Start State | Solution
----|---|---
+Start State | Algorithm | Nodes Expanded | Clock Time | Solution
+---|---|---|---|---
+247803615|IDA*|1812|0.057 seconds|DLURURDDLUULDRDLURRD
+876543210|IDA*|17677|2.858 seconds|LUULDDRUURDLULDDRRULDLURULDDRR
