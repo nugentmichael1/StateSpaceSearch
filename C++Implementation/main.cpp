@@ -216,7 +216,7 @@ class SSsearch
         int zeroCol = zeroIndex % this->dimension;
 
         // up & down
-        if (zeroRow > 0)
+        if (zeroRow > 0 && this->curState->movement != 'D')
         {
             // check up
 
@@ -227,7 +227,7 @@ class SSsearch
             this->checkReachedAddToFrontier(swapTargetIndex, 'U', zeroIndex);
         }
 
-        if (zeroRow < this->dimension - 1)
+        if (zeroRow < this->dimension - 1 && this->curState->movement != 'U')
         {
             // check down
 
@@ -239,7 +239,7 @@ class SSsearch
         }
 
         // check left and right
-        if (zeroCol > 0)
+        if (zeroCol > 0 && this->curState->movement != 'R')
         {
             // check left
 
@@ -250,7 +250,7 @@ class SSsearch
             this->checkReachedAddToFrontier(swapTargetIndex, 'L', zeroIndex);
         }
 
-        if (zeroCol < this->dimension - 1)
+        if (zeroCol < this->dimension - 1 && this->curState->movement != 'L')
         {
             // check right
 
@@ -282,7 +282,7 @@ class SSsearch
         // order: up, down, left, right
 
         // up & down
-        if (zeroRow > 0)
+        if (zeroRow > 0 && this->curState->movement != 'D')
         {
             // check up
 
@@ -293,7 +293,7 @@ class SSsearch
             this->checkExpandedAddToFrontier(swapTargetIndex, 'U', zeroIndex);
         }
 
-        if (zeroRow < this->dimension - 1)
+        if (zeroRow < this->dimension - 1 && this->curState->movement != 'U')
         {
             // check down
 
@@ -305,7 +305,7 @@ class SSsearch
         }
 
         // check left and right
-        if (zeroCol > 0)
+        if (zeroCol > 0 && this->curState->movement != 'R')
         {
             // check left
 
@@ -316,7 +316,7 @@ class SSsearch
             this->checkExpandedAddToFrontier(swapTargetIndex, 'L', zeroIndex);
         }
 
-        if (zeroCol < this->dimension - 1)
+        if (zeroCol < this->dimension - 1 && this->curState->movement != 'L')
         {
             // check right
 
@@ -1338,7 +1338,6 @@ int main(int argc, char *argv[])
         //  startState = "123450786";
         //  startState = "023145786";
         // startState = "71A92CE03DB4658F";
-        
 
         //  Test Goal States
         // goalState = "123456780";
