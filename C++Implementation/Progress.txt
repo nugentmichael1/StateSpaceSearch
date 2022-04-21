@@ -19,3 +19,37 @@ fMax: 47
 States Expanded this iteration: 10471
 fMax: 48
 States Expanded this iteration: 16534
+fMax: 49
+States Expanded this iteration: 23135
+fMax: 50
+States Expanded this iteration: 39834
+fMax: 51
+States Expanded this iteration: 75110
+fMax: 52
+States Expanded this iteration: 96010
+fMax: 53
+States Expanded this iteration: 202423
+fMax: 54
+States Expanded this iteration: 270069
+fMax: 55
+States Expanded this iteration: 372335
+fMax: 56
+States Expanded this iteration: 532357
+fMax: 57
+States Expanded this iteration: 884740
+fMax: 58
+States Expanded this iteration: 720932
+fMax: 59
+States Expanded this iteration: 1202171
+fMax: 60
+States Expanded this iteration: 1412919
+fMax: 61
+States Expanded this iteration: 2533109
+fMax: 62
+States Expanded this iteration: 1829243
+fMax: 63
+States Expanded this iteration: 7076125
+fMax: 64
+States Expanded this iteration: 6480931
+fMax: 65
+States Expanded this iteration: 7927981

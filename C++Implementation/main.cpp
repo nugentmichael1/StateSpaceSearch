@@ -183,8 +183,11 @@ public:
 
 class SSsearch
 {
-    vector<state *> reached;              // tracks states seen already to avoid unnecessary expansions and memory use
-    vector<state *> expanded;             // only used for A* algorithms, replaces reached
+    // vector<state *> reached; // tracks states seen already to avoid unnecessary expansions and memory use
+    unordered_map<string, state *> reached; // replace vector with hash table for fast lookup (constant)
+    // vector<state *> expanded;             // only used for A* algorithms, replaces reached
+    unordered_map<string, state *>
+        expanded;                         // replace vector with hash table for fast lookup
     frontier f;                           // frontier object.  based on algorithm, composed of a stack, queue, or priority queue.
     unsigned int expandCount = 0;         // keep track of states expanded
     state *start;                         // pointer to start state
@@ -272,7 +275,8 @@ class SSsearch
         this->curState->print();
 
         // premptively add curState to expanded tracker
-        this->expanded.emplace_back(this->curState);
+        // this->expanded.emplace_back(this->curState);
+        this->expanded[this->curState->perm] = this->curState;
 
         // identify coordinate of empty tile within puzzle slider
         int zeroIndex = this->curState->perm.find('0');
@@ -339,9 +343,11 @@ class SSsearch
         newStatePerm[swapTargetIndex] = '0';
 
         // search expanded container for new state
-        vector<state *>::iterator it = find_if(this->expanded.begin(), this->expanded.end(), [newStatePerm](state *s)
-                                               { return (s->perm == newStatePerm); });
-        if (it == this->expanded.end())
+        // vector<state *>::iterator it = find_if(this->expanded.begin(), this->expanded.end(), [newStatePerm](state *s)
+        //                                        { return (s->perm == newStatePerm); });
+        // if (it == this->expanded.end())
+
+        if (!this->expanded.count(newStatePerm))
         {
             // new state not found in expanded.  add to frontier and expanded.
 
@@ -358,7 +364,8 @@ class SSsearch
             state *s = new state(newStatePerm, this->curState, movement, newCostSoFar, ttlEstCost);
 
             // add state to expanded vector
-            this->expanded.emplace_back(s);
+            // this->expanded.emplace_back(s);
+            // this->expanded[newStatePerm] = this->curState;
 
             // add state to frontier
             this->f.push(s);
@@ -517,15 +524,17 @@ class SSsearch
         newStatePerm[swapTargetIndex] = '0';
 
         // search reached container for new state
-        vector<state *>::iterator it = find_if(this->reached.begin(), this->reached.end(), [newStatePerm](state *s)
-                                               { return (s->perm == newStatePerm); });
-        if (it == this->reached.end())
+        // vector<state *>::iterator it = find_if(this->reached.begin(), this->reached.end(), [newStatePerm](state *s)
+        //                                        { return (s->perm == newStatePerm); });
+        // if (it == this->reached.end())
+        if (!this->reached.count(newStatePerm))
         {
             // new state not found in reached.
 
             // add new state to reached and frontier
             state *s = new state(newStatePerm, this->curState, movement, this->curState->level + 1);
-            this->reached.emplace_back(s);
+            // this->reached.emplace_back(s);
+            this->reached[newStatePerm] = s;
             this->f.push(s);
         }
     }
@@ -734,7 +743,8 @@ class SSsearch
                 depthBound += 1;
 
                 // clear reached array of all but the start state
-                this->reached = vector<state *>(1, this->start);
+                // this->reached = vector<state *>(1, this->start);
+                this->reached = unordered_map<string, state *>({{this->start->perm, this->start}});
 
                 // technically this is already empty by this point.  Might remove.
                 this->f = frontier("stack");
@@ -768,7 +778,7 @@ class SSsearch
             this->expandAStar();
 
             // remove all occurences of recently expanded state from frontier
-            this->f.removeAll(this->curState);
+            // this->f.removeAll(this->curState);
 
             // debug:
             cout << "A*: most recently expanded state\n";
@@ -778,6 +788,9 @@ class SSsearch
 
             // get next state from priority queue
             this->curState = this->f.pop();
+            // make sure state hasn't been expanded already
+            while (this->expanded.count(this->curState->perm))
+                this->curState = this->f.pop();
         }
     }
 
@@ -874,7 +887,8 @@ class SSsearch
                 fMin = INT32_MAX;
 
                 // clear reached vector
-                this->reached = vector<state *>(1, this->start);
+                // this->reached = vector<state *>(1, this->start);
+                this->reached = unordered_map<string, state *>({{this->start->perm, this->start}});
 
                 // reset current state to start state
                 this->curState = this->start;
@@ -929,8 +943,11 @@ public:
     SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic), algo(algo), startTime(chrono::high_resolution_clock::now())
     {
 
+        // this->expanded.reserve(this->expanded.max_size()/2);
+
         // record that start state has been seen
-        this->reached.emplace_back(this->start);
+        // this->reached.emplace_back(this->start);
+        this->reached[this->start->perm] = this->start;
 
         // set dimension (e.g. 3x3 or 4x4)
         this->dimension = sqrt(this->start->perm.length());
@@ -1256,7 +1273,7 @@ int main(int argc, char *argv[])
     // default variable initilizations
     string startState = "123450786";
     string goalState = "123456780";
-    string algo = "A*";
+    string algo = "IDA*";
     string heuristic = "mHD";
 
     // run 1

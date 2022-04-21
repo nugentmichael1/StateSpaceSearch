@@ -80,3 +80,10 @@ Start State | Solution String | Algorithm
 "7DB13C52F46E80A9"   
 
 You can work in groups, but each person needs to submit assignment, and assignment report should list all team member names.  Groups are generally limited to 5.
+
+Start State | Algorithm | Nodes Expanded | Clock Time | Solution
+:-:|:-:|:-:|:-:|:-:
+123056478|IDA*|3|0 seconds|DRR
+438215760|IDA*|83|0.001 seconds|UULDRDLULURDRD
+123456789ACEDB0F|IDA*|557|0.006 seconds|LURRDLULDRRULDR
+FAC42B061D89E537|IDA*|39831507|261.687 seconds|LULDDRRDRUULDRUULLDRURDLULDDDRURULLDDRRUULULLDRDDRUULDDLURRDR
