@@ -1,55 +1,43 @@
-FAC42B061D89E537
-fMax: 39
-States Expanded this iteration: 11
-fMax: 40
-States Expanded this iteration: 18
-fMax: 41
-States Expanded this iteration: 76
-fMax: 42
-States Expanded this iteration: 255
-fMax: 43
-States Expanded this iteration: 751
-fMax: 44
-States Expanded this iteration: 1619
-fMax: 45
-States Expanded this iteration: 3585
-fMax: 46
-States Expanded this iteration: 5289
-fMax: 47
-States Expanded this iteration: 10471
-fMax: 48
-States Expanded this iteration: 16534
+7DB13C52F46E80A9
 fMax: 49
-States Expanded this iteration: 23135
+States Expanded this iteration: 4
 fMax: 50
-States Expanded this iteration: 39834
+States Expanded this iteration: 5
 fMax: 51
-States Expanded this iteration: 75110
+States Expanded this iteration: 13
 fMax: 52
-States Expanded this iteration: 96010
+States Expanded this iteration: 56
 fMax: 53
-States Expanded this iteration: 202423
+States Expanded this iteration: 355
 fMax: 54
-States Expanded this iteration: 270069
+States Expanded this iteration: 709
 fMax: 55
-States Expanded this iteration: 372335
+States Expanded this iteration: 5065
 fMax: 56
-States Expanded this iteration: 532357
+States Expanded this iteration: 7052
 fMax: 57
-States Expanded this iteration: 884740
+States Expanded this iteration: 20008
 fMax: 58
-States Expanded this iteration: 720932
+States Expanded this iteration: 57972
 fMax: 59
-States Expanded this iteration: 1202171
+States Expanded this iteration: 105354
 fMax: 60
-States Expanded this iteration: 1412919
+States Expanded this iteration: 175397
 fMax: 61
-States Expanded this iteration: 2533109
+States Expanded this iteration: 407572
 fMax: 62
-States Expanded this iteration: 1829243
+States Expanded this iteration: 774074
 fMax: 63
-States Expanded this iteration: 7076125
+States Expanded this iteration: 1278415
 fMax: 64
-States Expanded this iteration: 6480931
+States Expanded this iteration: 1564306
 fMax: 65
-States Expanded this iteration: 7927981
+States Expanded this iteration: 2388523
+fMax: 66
+States Expanded this iteration: 3825749
+fMax: 67
+States Expanded this iteration: 5670953
+fMax: 68
+States Expanded this iteration: 7505454
+fMax: 69
+States Expanded this iteration: 15311848
