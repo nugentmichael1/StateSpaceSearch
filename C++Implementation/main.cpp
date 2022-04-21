@@ -199,6 +199,7 @@ class SSsearch
     chrono::high_resolution_clock::time_point endTime;
     // chrono::duration<int> durationTime;
     double durationTime;
+    unordered_map<char, pair<int, int>> finalPosition;
 
     // opens up possible new states from current state, and adds to frontier if not seen before
     void expand()
@@ -402,29 +403,48 @@ class SSsearch
     {
         int totalDistance = 0;
 
-        for (int i = 0; i < perm.length(); i++)
+        // int index = 0;
+        // vector<vector<char>> matrixRep(this->dimension, vector<char>(this->dimension));
+        // for (int row = 0; row < this->dimension; row++)
+        // {
+        //     for (int col = 0; col < this->dimension; col++)
+        //     {
+        //         matrixRep[row][col] = perm[index++];
+        //     }
+        // }
+
+        for (int row = 0, index = 0; row < this->dimension; row++)
         {
-
-            // determine target index
-            int currentValue = perm[i];
-            string::iterator it = find(this->goalPerm.begin(), this->goalPerm.end(), currentValue);
-            int targetIndex = it - this->goalPerm.begin();
-
-            // determine coordinates of current position
-            int currentRow = i / this->dimension;
-            int currentCol = i % this->dimension;
-
-            // determine coordinates of target position
-            int targetRow = targetIndex / this->dimension;
-            int targetCol = targetIndex % this->dimension;
-
-            // determine how many moves must be made per dimension
-            int horizontal = abs(currentCol - targetCol);
-            int vertical = abs(currentRow - targetRow);
-
-            // add both dimension distances to total distance
-            totalDistance += horizontal + vertical;
+            for (int col = 0; col < this->dimension; col++)
+            {
+                pair<int, int> coord = this->finalPosition[perm[index]];
+                totalDistance += abs(row - coord.second) + abs(col - coord.first);
+            }
         }
+
+        // for (int i = 0; i < perm.length(); i++)
+        // {
+
+        //     // determine target index
+        //     int currentValue = perm[i];
+        //     string::iterator it = find(this->goalPerm.begin(), this->goalPerm.end(), currentValue);
+        //     int targetIndex = it - this->goalPerm.begin();
+
+        //     // determine coordinates of current position
+        //     int currentRow = i / this->dimension;
+        //     int currentCol = i % this->dimension;
+
+        //     // determine coordinates of target position
+        //     int targetRow = targetIndex / this->dimension;
+        //     int targetCol = targetIndex % this->dimension;
+
+        //     // determine how many moves must be made per dimension
+        //     int horizontal = abs(currentCol - targetCol);
+        //     int vertical = abs(currentRow - targetRow);
+
+        //     // add both dimension distances to total distance
+        //     totalDistance += horizontal + vertical;
+        // }
 
         return totalDistance;
     }
@@ -867,6 +887,44 @@ class SSsearch
         }
     }
 
+    void createFinalPosMatrix()
+    {
+        // unordered_map<char, pair<int, int>> finalPosition({{'0', {this->dimension - 1, this->dimension - 1}},
+        //                                                    {'1', {0, 0}},
+        //                                                    {'2', {0, 1}},
+        //                                                    {'3', {0, 2}},
+        //                                                    {}});
+
+        // debug
+        //  cout << "this->dimension: " << this->dimension << "\n";
+
+        //  build finalPosition dictionary for manhattan distance
+        unordered_map<char, pair<int, int>> fp;
+        char indexChar = char(49); //'1' character
+        for (int row = 0; row < this->dimension; row++)
+        {
+            for (int col = 0; col < this->dimension; col++)
+            {
+                fp[indexChar] = {row, col};
+                if (indexChar == char(57))
+                    indexChar = char(65);
+                else
+                    indexChar++;
+            }
+        }
+
+        fp['0'] = {this->dimension - 1,
+                   this->dimension - 1};
+
+        this->finalPosition = fp;
+
+        for (int i = 0; i < this->goalPerm.size(); i++)
+        {
+            char cur = this->goalPerm[i];
+            cout << cur << ": " << this->finalPosition[cur].first << ", " << this->finalPosition[cur].second << "\n";
+        }
+    }
+
 public:
     SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic), algo(algo), startTime(chrono::high_resolution_clock::now())
     {
@@ -876,6 +934,8 @@ public:
 
         // set dimension (e.g. 3x3 or 4x4)
         this->dimension = sqrt(this->start->perm.length());
+
+        this->createFinalPosMatrix();
 
         // verify start and goal states are in a valid format
         if (!this->validateInput("start"))
