@@ -30,6 +30,7 @@ If no parameters are provided, a set of default states and algorithm are used, w
 #include <stack>         //dfs, iddfs, IDA*
 #include <unordered_map> //pattern database heuristic
 #include <chrono>        //clock time
+#include <time.h>        //random seed
 
 using namespace std;
 
@@ -428,63 +429,63 @@ class SSsearch
         return totalDistance;
     }
 
-/*    failed attempt at pattern database heuristic
+    /*    failed attempt at pattern database heuristic
 
-     // heuristic
-     int patternDatabase()
-     {
-         // cout << "Pattern database size: " << this->patternDB.size() << "\n";
-         if (this->patternDB.size() == 0)
+         // heuristic
+         int patternDatabase()
          {
-             // create database
-             this->createPatternDatabase();
-         }
+             // cout << "Pattern database size: " << this->patternDB.size() << "\n";
+             if (this->patternDB.size() == 0)
+             {
+                 // create database
+                 this->createPatternDatabase();
+             }
 
-        return 0;
-    }
-
-    void createPatternDatabase()
-    {
-        // take bottom row and right-most column.  Find number of moves to get solution with just regards to those tiles.
-        // Permutation = 16!/9! (not sure how blank tile in non-fringe areas contributes to search space)
-
-        int totalPermutations = 1;
-        int n = pow(this->dimension, 2);
-        int r = this->dimension * 2 - 1;
-
-        cout << "dimension: " << this->dimension << "\n";
-
-        // calculate total permutations, simulate factorial
-        for (int i = n; i > n - r; i--)
-        {
-            cout << "i: " << i << " n: " << n << "; r: " << r << "\n";
-            totalPermutations *= i;
+            return 0;
         }
 
-        cout << "totalPermutations: " << totalPermutations << "\n";
-
-        // cout << "sizeof(int): " << sizeof(long int) << "\n";
-
-        for (int i = 0; i < totalPermutations; i++)
+        void createPatternDatabase()
         {
-            string perm("");
-            int distance = 0;
+            // take bottom row and right-most column.  Find number of moves to get solution with just regards to those tiles.
+            // Permutation = 16!/9! (not sure how blank tile in non-fringe areas contributes to search space)
 
-            // build permutation
-            for (int j = 0; j < n; j++)
+            int totalPermutations = 1;
+            int n = pow(this->dimension, 2);
+            int r = this->dimension * 2 - 1;
+
+            cout << "dimension: " << this->dimension << "\n";
+
+            // calculate total permutations, simulate factorial
+            for (int i = n; i > n - r; i--)
             {
+                cout << "i: " << i << " n: " << n << "; r: " << r << "\n";
+                totalPermutations *= i;
             }
 
-            // add permutation's distance to table
-            // this->patternDB.insert({perm, distance});
+            cout << "totalPermutations: " << totalPermutations << "\n";
+
+            // cout << "sizeof(int): " << sizeof(long int) << "\n";
+
+            for (int i = 0; i < totalPermutations; i++)
+            {
+                string perm("");
+                int distance = 0;
+
+                // build permutation
+                for (int j = 0; j < n; j++)
+                {
+                }
+
+                // add permutation's distance to table
+                // this->patternDB.insert({perm, distance});
+            }
+            cout << "Finished createPatternDatabase()\n";
+            // for (int i = 0; i < this->dimension; i++)
+            // {
+            //     // perm += this->
+            // }
         }
-        cout << "Finished createPatternDatabase()\n";
-        // for (int i = 0; i < this->dimension; i++)
-        // {
-        //     // perm += this->
-        // }
-    }
-    */
+        */
 
     // utility function to condense expand()
     void checkReachedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
@@ -628,7 +629,7 @@ class SSsearch
 
         this->endTime = chrono::high_resolution_clock::now();
         this->durationTime = double(chrono::duration_cast<chrono::milliseconds>(this->endTime - this->startTime).count());
-        this->durationTime/=1000;
+        this->durationTime /= 1000;
     }
 
     // Reports results to console.
@@ -930,7 +931,8 @@ public:
         return this->algo;
     }
     // chrono::duration<int> getClockTime(){
-    double getClockTime(){
+    double getClockTime()
+    {
         return this->durationTime;
     }
 };
@@ -1050,6 +1052,138 @@ public:
     }
 };
 
+class randomWalk
+{
+    string start;
+    string end;
+    string currentState;
+    int movesCnt;
+    int dimension;
+    char prevMove;
+    int zeroIndex;
+    vector<char> legalMoves;
+    unordered_map<char, char> prevMoveOpposite;
+
+    void move(char &nextMove)
+    {
+        int targetIndex;
+
+        if (nextMove == 'U')
+        {
+            targetIndex = this->zeroIndex - this->dimension;
+        }
+        else if (nextMove == 'D')
+        {
+            targetIndex = this->zeroIndex + this->dimension;
+        }
+        else if (nextMove == 'L')
+        {
+            targetIndex = this->zeroIndex - 1;
+        }
+        else if (nextMove == 'R')
+        {
+            targetIndex = this->zeroIndex + 1;
+        }
+        else
+        {
+            cout << "Incorrect move character encountered.\n";
+        }
+
+        // make swap
+        this->currentState[this->zeroIndex] = this->currentState[targetIndex];
+        this->currentState[targetIndex] = '0';
+        this->zeroIndex = targetIndex;
+    }
+
+    void findLegalMoves()
+    {
+        this->legalMoves = vector<char>(0);
+        int zeroCol = this->zeroIndex % this->dimension;
+        int zeroRow = this->zeroIndex / this->dimension;
+
+        if (zeroRow > 0)
+        {
+            this->legalMoves.emplace_back('U');
+        }
+        if (zeroRow < this->dimension - 1)
+        {
+            this->legalMoves.emplace_back('D');
+        }
+        if (zeroCol > 0)
+        {
+            this->legalMoves.emplace_back('L');
+        }
+        if (zeroCol < this->dimension - 1)
+        {
+            this->legalMoves.emplace_back('R');
+        }
+    }
+
+    void removeOppositePrevMove()
+    {
+        char oppositeMove = this->prevMoveOpposite[this->prevMove];
+        vector<char>::iterator it = find(this->legalMoves.begin(), this->legalMoves.end(), oppositeMove);
+
+        this->legalMoves.erase(it);
+    }
+
+public:
+    randomWalk(string &start, int movesCnt) : start(start), currentState(start), movesCnt(movesCnt)
+    {
+        // acquire dimension size from square root of string permutation size
+        this->dimension = sqrt(this->start.size());
+
+        // find zero position, and record
+        this->zeroIndex = find(this->start.begin(), this->start.end(), '0') - this->start.begin();
+
+        // dictionary to determine oppositve of previous move
+        this->prevMoveOpposite = unordered_map<char, char>({{'U', 'D'},
+                                                            {'D', 'U'},
+                                                            {'L', 'R'},
+                                                            {'R', 'L'}});
+
+        // get legal moves possible for current state
+        this->findLegalMoves();
+
+        // seed random number generator
+        srand(time(NULL));
+
+        int selection = rand() % this->legalMoves.size();
+
+        char nextMove = this->legalMoves[selection];
+
+        this->move(nextMove);
+
+        this->prevMove = nextMove;
+
+        for (int i = 0; i < this->movesCnt - 1; i++)
+        {
+
+            // get set of move choices
+            this->findLegalMoves();
+
+            // remove the opposite of previous move so as not to undo it
+            this->removeOppositePrevMove();
+
+            selection = rand() % this->legalMoves.size();
+
+            nextMove = this->legalMoves[selection];
+
+            // make move
+            this->move(nextMove);
+
+            this->prevMove = nextMove;
+        }
+
+        this->end = this->currentState;
+    }
+
+    string getEnd()
+    {
+        return this->end;
+    }
+};
+
 bool verifySolution(string &start, string &goal, string &solution);
 
 // void printToFile(string &start, string &goal, string &solution, string &fileName);
@@ -1130,8 +1264,15 @@ int main(int argc, char *argv[])
     // run 3
     else
     {
+
+        int moves = 40;
+        string rWalkStart = "123456789ABCDEF0";
+        randomWalk r(rWalkStart, moves);
+
+        startState = r.getEnd();
+
         //  Test Start States
-        startState = "120345786";
+        // startState = "120345786";
         //  startState = "203145786";
         //  startState = "123405786";
         //  startState = "123450786";
@@ -1139,10 +1280,10 @@ int main(int argc, char *argv[])
         // startState = "71A92CE03DB4658F";
 
         //  Test Goal States
-        goalState = "123456780";
-        // goalState = "123456789ABCDEF0";
+        // goalState = "123456780";
+        goalState = "123456789ABCDEF0";
 
-        algo = "IDA*";
+        algo = "A*";
     }
 
     // used by run 1 and 3
