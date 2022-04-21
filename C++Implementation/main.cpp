@@ -417,8 +417,8 @@ class SSsearch
         {
             for (int col = 0; col < this->dimension; col++)
             {
-                pair<int, int> coord = this->finalPosition[perm[index]];
-                totalDistance += abs(row - coord.second) + abs(col - coord.first);
+                pair<int, int> coord = this->finalPosition[perm[index++]];
+                totalDistance += abs(row - coord.first) + abs(col - coord.second);
             }
         }
 
@@ -1256,7 +1256,7 @@ int main(int argc, char *argv[])
     // default variable initilizations
     string startState = "123450786";
     string goalState = "123456780";
-    string algo = "IDA*";
+    string algo = "A*";
     string heuristic = "mHD";
 
     // run 1
@@ -1281,7 +1281,7 @@ int main(int argc, char *argv[])
         {
             // add header to file.
             oFile << "Start State | Algorithm | Nodes Expanded | Clock Time | Solution\n";
-            oFile << "---|---|---|---|---\n";
+            oFile << ":-:|:-:|:-:|:-:|:-:\n";
             oFile.close();
         }
         else
@@ -1338,6 +1338,7 @@ int main(int argc, char *argv[])
         //  startState = "123450786";
         //  startState = "023145786";
         // startState = "71A92CE03DB4658F";
+        
 
         //  Test Goal States
         // goalState = "123456780";

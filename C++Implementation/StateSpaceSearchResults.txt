@@ -1,2 +1,5 @@
 Start State | Algorithm | Nodes Expanded | Clock Time | Solution
 ---|---|---|---|---
+123056478|A*|3|0 seconds|DRR
+438215760|A*|37|0 seconds|UULDDRULLURDDR
+123456789ACEDB0F|A*|251|0.017 seconds|LURRDLULDRRULDR
