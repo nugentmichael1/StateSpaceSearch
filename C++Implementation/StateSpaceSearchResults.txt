@@ -1,2 +1,0 @@
-Start State | Algorithm | Nodes Expanded | Clock Time | Solution
-:-:|:-:|:-:|:-:|:-:
