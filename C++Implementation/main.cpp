@@ -185,19 +185,18 @@ class SSsearch
 {
     // vector<state *> reached; // tracks states seen already to avoid unnecessary expansions and memory use
     unordered_map<string, state *> reached; // replace vector with hash table for fast lookup (constant)
-    // vector<state *> expanded;             // only used for A* algorithms, replaces reached
-    unordered_map<string, state *>
-        expanded;                         // replace vector with hash table for fast lookup
-    frontier f;                           // frontier object.  based on algorithm, composed of a stack, queue, or priority queue.
-    unsigned int expandCount = 0;         // keep track of states expanded
-    state *start;                         // pointer to start state
-    state *curState;                      // pointer to current state.
-    string goalPerm;                      // goal state representation
-    int dimension;                        // usually 3 or 4.  sqrt(permutation length)
-    string solution;                      // sequence of movements.
-    string heuristicType = "oOP";         // default heuristic
-    unordered_map<string, int> patternDB; // hash table to use pattern database heuristic
-    string algo;                          // algorithm used
+    // vector<state *> expanded;               // only used for A* algorithms, replaces reached
+    unordered_map<string, state *> expanded; // replace vector with hash table for fast lookup
+    frontier f;                              // frontier object.  based on algorithm, composed of a stack, queue, or priority queue.
+    unsigned int expandCount = 0;            // keep track of states expanded
+    state *start;                            // pointer to start state
+    state *curState;                         // pointer to current state.
+    string goalPerm;                         // goal state representation
+    int dimension;                           // usually 3 or 4.  sqrt(permutation length)
+    string solution;                         // sequence of movements.
+    string heuristicType = "oOP";            // default heuristic
+    unordered_map<string, int> patternDB;    // hash table to use pattern database heuristic
+    string algo;                             // algorithm used
     chrono::high_resolution_clock::time_point startTime;
     chrono::high_resolution_clock::time_point endTime;
     // chrono::duration<int> durationTime;
@@ -374,11 +373,6 @@ class SSsearch
         //                << this->curState->perm << "\n";
         // }
 
-        // search expanded container for new state
-        // vector<state *>::iterator it = find_if(this->expanded.begin(), this->expanded.end(), [newStatePerm](state *s)
-        //                                        { return (s->perm == newStatePerm); });
-        // if (it == this->expanded.end())
-
         // debug
         // ofstream aStarDebug("aStarDebug.txt", ios_base::app);
         // if (aStarDebug.is_open())
@@ -389,8 +383,37 @@ class SSsearch
         //                << this->expanded.count(newStatePerm) << "\n";
         // }
 
+        // debug
+        // if (this->expanded.count(newStatePerm))
+        // {
+        //     string hashedStatePerm = this->expanded[newStatePerm]->perm;
+        //     if (hashedStatePerm != newStatePerm)
+        //     {
+        //         ofstream aStarDebug("aStarDebug.txt", ios_base::app);
+        //         if (aStarDebug.is_open())
+        //         {
+        //             aStarDebug << "newStatePerm: " << newStatePerm << "\n"
+        //                        << "hashedStateP: " << this->expanded[newStatePerm]->perm << "\n";
+        //             aStarDebug.close();
+        //         }
+        //     }
+        // }
+
+        // search expanded container for new state
+        // vector<state *>::iterator it = find_if(this->expanded.begin(), this->expanded.end(), [newStatePerm](state *s)
+        //                                        { return (s->perm == newStatePerm); });
+        // if (it == this->expanded.end())
         if (!this->expanded.count(newStatePerm))
         {
+
+            // // debug
+            // ofstream aStarDebug("aStarDebug.txt", ios_base::app);
+            // if (aStarDebug.is_open())
+            // {
+            //     aStarDebug << "inside if(!this->expanded.count(newStatePerm)\n"
+            //                << !this->expanded.count(newStatePerm) << "\n";
+            // }
+
             // new state not found in expanded.  add to frontier and expanded.
 
             // estimated cost from new state to goal state based on heuristic
@@ -404,10 +427,6 @@ class SSsearch
 
             // create state to add to expanded and frontier
             state *s = new state(newStatePerm, this->curState, movement, newCostSoFar, ttlEstCost);
-
-            // add state to expanded vector
-            // this->expanded.emplace_back(s);
-            // this->expanded[newStatePerm] = this->curState;
 
             // add state to frontier
             this->f.push(s);
@@ -811,21 +830,18 @@ class SSsearch
     {
         this->f = frontier("pQueue");
 
-        // this->expanded.reserve(362880);
-
         // debug
-        ofstream aStarDebug("aStarDebug.txt");
-        if (aStarDebug.is_open())
-            aStarDebug.close();
-        else
-        {
-            cout << "aStarDebug failed to open.";
-            return;
-        }
+        // ofstream aStarDebug("aStarDebug.txt");
+        // if (aStarDebug.is_open())
+        //     aStarDebug.close();
+        // else
+        // {
+        //     cout << "aStarDebug failed to open.";
+        //     return;
+        // }
 
         while (true)
         {
-            // cout << "A* iteration\n";
 
             // check to see if goal state found and taken off frontier
             if (this->curState->perm == this->goalPerm)
@@ -837,23 +853,25 @@ class SSsearch
             this->expandAStar();
 
             // remove all occurences of recently expanded state from frontier
+            // this function's n lookup time is inferior to hash table implementation's constant lookup time.
             // this->f.removeAll(this->curState);
 
             // debug:
-            cout << "A*: most recently expanded state\n";
-            this->curState->print();
-            cout << "Expanded count:" << this->expandCount << "\n";
-            cout << "Priority Queue size: " << this->f.size() << "\n";
+            // cout << "A*: most recently expanded state\n";
+            // this->curState->print();
+            // cout << "Expanded count:" << this->expandCount << "\n";
+            // cout << "Priority Queue size: " << this->f.size() << "\n";
 
             // get next state from priority queue
             this->curState = this->f.pop();
+
             // make sure state hasn't been expanded already
-            // while (this->expanded.count(this->curState->perm))
-            // {
-            //     // if(this->f.size()==0) return;
-            //     // cout << "A* while loop; f.size(): " << this->f.size() << "\n";
-            //     this->curState = this->f.pop();
-            // }
+            while (this->expanded.count(this->curState->perm))
+            {
+                // if(this->f.size()==0) return;
+                // cout << "A* while loop; f.size(): " << this->f.size() << "\n";
+                this->curState = this->f.pop();
+            }
         }
     }
 
@@ -910,10 +928,11 @@ class SSsearch
             // only expand states below the depth boundary
             if (this->curState->estTtlCost <= fMax)
             {
-                // cout << "Frontier (stack) size: " << this->f.size() << "\n";
 
                 // explore next states.  possibly add them to frontier.
                 this->expand();
+
+                //debug: status
                 statesExpandedCntPerIteration++;
             }
             else if (this->curState->estTtlCost < fMin)
@@ -941,38 +960,30 @@ class SSsearch
                 // this will automatically close when the variable loses scope, but doesn't hurt to be explicit?
                 progress.close();
 
-                // debug
-                // cout << "Last state of iteration's stats:\n";
-                // this->curState->print();
-                // cout << "States expanded this iteration: " << statesExpandedCntPerIteration << "\n";
-
+                // debug: status
                 statesExpandedCntPerIteration = 0;
 
                 // reset minimum rejected node distance to infinite
                 fMin = INT32_MAX;
 
-                // cout << "start state";
-                // this->start->print();
-
+                // record start state attributes to recreate after mass memory freedom
                 string startPerm = this->start->perm;
-                // clear reached vector
-                // delete all states to free memory
-                // int index = 0;
-                // cout << "reached size: " << this->reached.size() << "\n";
+
+                // delete all reached states to free memory
                 for (unordered_map<string, state *>::iterator it = this->reached.begin(); it != this->reached.end(); it++)
                 {
-                    // cout << "For Loop: free memory: " << index++ << "\n";
                     delete it->second;
                 }
 
+                // recreate start state
                 this->start = new state(startPerm, NULL, 'S', 0);
+
+                // clear reached vector
                 // this->reached = vector<state *>(1, this->start);
                 this->reached = unordered_map<string, state *>({{this->start->perm, this->start}});
 
                 // reset current state to start state
                 this->curState = this->start;
-                // cout << "curState print (start)";
-                // this->curState->print();
             }
             else
             {
@@ -1023,8 +1034,6 @@ class SSsearch
 public:
     SSsearch(string start, string goal, string algo, string heuristic) : start(new state(start, NULL, 'S', 0)), goalPerm(goal), curState(this->start), heuristicType(heuristic), algo(algo), startTime(chrono::high_resolution_clock::now())
     {
-
-        // this->expanded.reserve(this->expanded.max_size()/2);
 
         // record that start state has been seen
         // this->reached.emplace_back(this->start);
@@ -1354,7 +1363,7 @@ int main(int argc, char *argv[])
     // default variable initilizations
     string startState = "123450786";
     string goalState = "123456780";
-    string algo = "IDA*";
+    string algo = "A*";
     string heuristic = "mHD";
 
     // run 1

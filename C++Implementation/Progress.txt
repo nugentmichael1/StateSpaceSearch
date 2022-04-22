@@ -1,69 +1,59 @@
-EAB480FC19D56237
+38592F16BC7AE04D
 fMax: 41
 States Expanded this iteration: 1
-fMax: 42
-States Expanded this iteration: 69
 fMax: 43
-States Expanded this iteration: 193
+States Expanded this iteration: 4
 fMax: 44
-States Expanded this iteration: 424
+States Expanded this iteration: 6
 fMax: 45
-States Expanded this iteration: 960
+States Expanded this iteration: 55
 fMax: 46
-States Expanded this iteration: 2083
+States Expanded this iteration: 293
 fMax: 47
-States Expanded this iteration: 4320
+States Expanded this iteration: 892
 fMax: 48
-States Expanded this iteration: 7227
+States Expanded this iteration: 2179
 fMax: 49
-States Expanded this iteration: 10521
+States Expanded this iteration: 4046
 fMax: 50
-States Expanded this iteration: 9709
+States Expanded this iteration: 7123
 fMax: 51
-States Expanded this iteration: 16320
+States Expanded this iteration: 13606
 fMax: 52
-States Expanded this iteration: 29142
+States Expanded this iteration: 22189
 fMax: 53
-States Expanded this iteration: 41426
+States Expanded this iteration: 28189
 fMax: 54
-States Expanded this iteration: 57943
+States Expanded this iteration: 40775
 fMax: 55
-States Expanded this iteration: 72762
+States Expanded this iteration: 53976
 fMax: 56
-States Expanded this iteration: 143385
+States Expanded this iteration: 125694
 fMax: 57
-States Expanded this iteration: 122895
+States Expanded this iteration: 190687
 fMax: 58
-States Expanded this iteration: 350455
+States Expanded this iteration: 304040
 fMax: 59
-States Expanded this iteration: 335526
+States Expanded this iteration: 411880
 fMax: 60
-States Expanded this iteration: 599819
+States Expanded this iteration: 526693
 fMax: 61
-States Expanded this iteration: 382257
+States Expanded this iteration: 1642848
 fMax: 62
-States Expanded this iteration: 1017403
+States Expanded this iteration: 823607
 fMax: 63
-States Expanded this iteration: 619257
+States Expanded this iteration: 1906031
 fMax: 64
-States Expanded this iteration: 1595891
+States Expanded this iteration: 1668225
 fMax: 65
-States Expanded this iteration: 3171267
+States Expanded this iteration: 5839930
 fMax: 66
-States Expanded this iteration: 2232000
+States Expanded this iteration: 4107165
 fMax: 67
-States Expanded this iteration: 2526220
+States Expanded this iteration: 4656817
 fMax: 68
-States Expanded this iteration: 5480718
+States Expanded this iteration: 4261141
 fMax: 69
-States Expanded this iteration: 14098712
+States Expanded this iteration: 7003224
 fMax: 70
-States Expanded this iteration: 15387661
-fMax: 71
-States Expanded this iteration: 24218986
-fMax: 72
-States Expanded this iteration: 16986797
-fMax: 73
-States Expanded this iteration: 25962445
-fMax: 74
-States Expanded this iteration: 24264488
+States Expanded this iteration: 14806874
