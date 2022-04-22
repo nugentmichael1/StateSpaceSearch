@@ -280,13 +280,33 @@ class SSsearch
 
         // identify coordinate of empty tile within puzzle slider
         int zeroIndex = this->curState->perm.find('0');
-        int zeroRow = floor(zeroIndex / this->dimension);
+        int zeroRow = zeroIndex / this->dimension;
         int zeroCol = zeroIndex % this->dimension;
+
+        // debug
+        // ofstream aStarDebug("aStarDebug.txt", ios_base::app);
+        // if (aStarDebug.is_open())
+        // {
+        //     aStarDebug << "perm: " << this->curState->perm << "; zeroIndex: " << zeroIndex << "; zeroRow: " << zeroRow << "; zeroCol: " << zeroCol << "\n";
+        // }
+
+        // ofstream progress("Progress.txt", ios_base::app);
+        // if (progress.is_open())
+        // {
+        //     progress << "fMax: " << fMax << "\n";
+        //     progress << "States Expanded this iteration: " << statesExpandedCntPerIteration << "\n";
+        // }
+        // else
+        //     cout << "Failed to open Progress.txt.\n";
+
+        // this will automatically close when the variable loses scope, but doesn't hurt to be explicit?
+        // progress.close();
 
         // order: up, down, left, right
 
         // up & down
-        if (zeroRow > 0 && this->curState->movement != 'D')
+        if (zeroRow > 0)
+        //  && this->curState->movement != 'D')
         {
             // check up
 
@@ -297,7 +317,8 @@ class SSsearch
             this->checkExpandedAddToFrontier(swapTargetIndex, 'U', zeroIndex);
         }
 
-        if (zeroRow < this->dimension - 1 && this->curState->movement != 'U')
+        if (zeroRow < this->dimension - 1)
+        //  && this->curState->movement != 'U')
         {
             // check down
 
@@ -309,7 +330,8 @@ class SSsearch
         }
 
         // check left and right
-        if (zeroCol > 0 && this->curState->movement != 'R')
+        if (zeroCol > 0)
+        //  && this->curState->movement != 'R')
         {
             // check left
 
@@ -320,7 +342,8 @@ class SSsearch
             this->checkExpandedAddToFrontier(swapTargetIndex, 'L', zeroIndex);
         }
 
-        if (zeroCol < this->dimension - 1 && this->curState->movement != 'L')
+        if (zeroCol < this->dimension - 1)
+        //  && this->curState->movement != 'L')
         {
             // check right
 
@@ -332,7 +355,7 @@ class SSsearch
         }
     }
 
-    // only used by A* (not the same as IDA*).  checks expanded vector instead of reached like the algorithms.
+    // only used by A* (not the same as IDA*).  checks expanded vector instead of reached like the other algorithms.
     void checkExpandedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
     {
         // create array copy of curState
@@ -342,10 +365,29 @@ class SSsearch
         newStatePerm[zeroIndex] = newStatePerm[swapTargetIndex];
         newStatePerm[swapTargetIndex] = '0';
 
+        // debug
+        // ofstream aStarDebug("aStarDebug.txt", ios_base::app);
+        // if (aStarDebug.is_open())
+        // {
+        //     aStarDebug << "newStatePerm == curState->perm\n"
+        //                << newStatePerm << "\n"
+        //                << this->curState->perm << "\n";
+        // }
+
         // search expanded container for new state
         // vector<state *>::iterator it = find_if(this->expanded.begin(), this->expanded.end(), [newStatePerm](state *s)
         //                                        { return (s->perm == newStatePerm); });
         // if (it == this->expanded.end())
+
+        // debug
+        // ofstream aStarDebug("aStarDebug.txt", ios_base::app);
+        // if (aStarDebug.is_open())
+        // {
+        //     aStarDebug << "1 -- expanded.count(newStatePerm): "
+        //                << this->expanded.count(newStatePerm) << "\n"
+        //                << "2 -- expanded.count(newStatePerm): "
+        //                << this->expanded.count(newStatePerm) << "\n";
+        // }
 
         if (!this->expanded.count(newStatePerm))
         {
@@ -517,6 +559,8 @@ class SSsearch
     // utility function to condense expand()
     void checkReachedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
     {
+        // cout << "checkReachedAddToFrontier: ";
+        // this->curState->print();
 
         // create array copy of curState and perform swap
         string newStatePerm = this->curState->perm;
@@ -536,6 +580,7 @@ class SSsearch
             // this->reached.emplace_back(s);
             this->reached[newStatePerm] = s;
             this->f.push(s);
+            // cout << "added state to frontier\n";
         }
     }
 
@@ -766,8 +811,22 @@ class SSsearch
     {
         this->f = frontier("pQueue");
 
+        // this->expanded.reserve(362880);
+
+        // debug
+        ofstream aStarDebug("aStarDebug.txt");
+        if (aStarDebug.is_open())
+            aStarDebug.close();
+        else
+        {
+            cout << "aStarDebug failed to open.";
+            return;
+        }
+
         while (true)
         {
+            // cout << "A* iteration\n";
+
             // check to see if goal state found and taken off frontier
             if (this->curState->perm == this->goalPerm)
             {
@@ -789,8 +848,12 @@ class SSsearch
             // get next state from priority queue
             this->curState = this->f.pop();
             // make sure state hasn't been expanded already
-            while (this->expanded.count(this->curState->perm))
-                this->curState = this->f.pop();
+            // while (this->expanded.count(this->curState->perm))
+            // {
+            //     // if(this->f.size()==0) return;
+            //     // cout << "A* while loop; f.size(): " << this->f.size() << "\n";
+            //     this->curState = this->f.pop();
+            // }
         }
     }
 
@@ -847,6 +910,8 @@ class SSsearch
             // only expand states below the depth boundary
             if (this->curState->estTtlCost <= fMax)
             {
+                // cout << "Frontier (stack) size: " << this->f.size() << "\n";
+
                 // explore next states.  possibly add them to frontier.
                 this->expand();
                 statesExpandedCntPerIteration++;
@@ -886,12 +951,28 @@ class SSsearch
                 // reset minimum rejected node distance to infinite
                 fMin = INT32_MAX;
 
+                // cout << "start state";
+                // this->start->print();
+
+                string startPerm = this->start->perm;
                 // clear reached vector
+                // delete all states to free memory
+                // int index = 0;
+                // cout << "reached size: " << this->reached.size() << "\n";
+                for (unordered_map<string, state *>::iterator it = this->reached.begin(); it != this->reached.end(); it++)
+                {
+                    // cout << "For Loop: free memory: " << index++ << "\n";
+                    delete it->second;
+                }
+
+                this->start = new state(startPerm, NULL, 'S', 0);
                 // this->reached = vector<state *>(1, this->start);
                 this->reached = unordered_map<string, state *>({{this->start->perm, this->start}});
 
                 // reset current state to start state
                 this->curState = this->start;
+                // cout << "curState print (start)";
+                // this->curState->print();
             }
             else
             {
@@ -1455,9 +1536,5 @@ vector<string> getProblems(string &inputFile)
 }
 
 /* Notes for hard problems:
-Start fMax higher.  At least 56 for the first hard problem.  Probably closer to 100, though.
-Implemented fMax tracker that records increases to output file.  If the program is closed before it finds the solution, the data can be used to start it back up where it left off last.
-
-
 Make pattern database heuristic its own class, and feed the same object to each search implementation so as to not waste the creation time.  "Ameliorate" the initial cost over multiple problems.
 */
