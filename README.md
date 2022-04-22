@@ -80,31 +80,3 @@ EAB480FC19D56237|IDA*|fail|fail|fail
 7DB13C52F46E80A9|IDA*|50066037|326.987 seconds|RUULDLDRRULLUURRRDDLDRUULLDRRULLURRDLLLURDDLURDDRUULURDLDDLURDRR
 
 You can work in groups, but each person needs to submit assignment, and assignment report should list all team member names.  Groups are generally limited to 5.
-
-## Discussion Board Problems
-
-### Ryan Anderson
-Start State | Algorithm | Nodes Expanded | Clock Time | Solution
-:-:|:-:|:-:|:-:|:-:
-231560847|IDA*|8668|0.031 seconds|LLDRRUULLDRRULDLURRDLLDRURD
-648057213|IDA*|6551|0.019 seconds|DRRULDRUULLDDRRULURDLULDRDR
-123456780F9BACDE|IDA*|29040|0.144 seconds|RRRDLURDLLURRDLULLDRRULLDRRURD
-E3129B74D6580CAF|IDA*|128393|0.649 seconds|UURURRDLLLURDLDRUURDDLDRULURRDLLLURDDRR
-
-### Hunter Alan Cotton
-Start State | Algorithm | Nodes Expanded | Clock Time | Solution
-:-:|:-:|:-:|:-:|:-:
-123056478|IDA*|3|0 seconds|DRR
-438215760|IDA*|83|0.001 seconds|UULDRDLULURDRD
-123456789ACEDB0F|IDA*|557|0.006 seconds|LURRDLULDRRULDR
-FAC42B061D89E537|IDA*|39831507|261.687 seconds|LULDDRRDRUULDRUULLDRURDLULDDDRURULLDDRRUULULLDRDDRUULDDLURRDR
-
-### Alexis Lara-Umana
-Start State | Algorithm | Nodes Expanded | Clock Time | Solution
-:-:|:-:|:-:|:-:|:-:
-748203561|IDA*|1690|0.006 seconds|RULDRDLURULDLURDRDLLURDR
-2951604793|IDA*|invalid input|invalid input|invalid input
-38592F16BC7AE04D|IDA*|48448190+|?|?
-ED04927F15AC83B6|IDA*|13245192|80.061 seconds|LDRRDLUULDLDRDRRULLURDDLUUULDDRDLURUURDDLDRRULLURRDLDLURURDLDR
-
-

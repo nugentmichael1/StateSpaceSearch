@@ -304,8 +304,7 @@ class SSsearch
         // order: up, down, left, right
 
         // up & down
-        if (zeroRow > 0)
-        //  && this->curState->movement != 'D')
+        if (zeroRow > 0 && this->curState->movement != 'D')
         {
             // check up
 
@@ -316,8 +315,7 @@ class SSsearch
             this->checkExpandedAddToFrontier(swapTargetIndex, 'U', zeroIndex);
         }
 
-        if (zeroRow < this->dimension - 1)
-        //  && this->curState->movement != 'U')
+        if (zeroRow < this->dimension - 1 && this->curState->movement != 'U')
         {
             // check down
 
@@ -329,8 +327,7 @@ class SSsearch
         }
 
         // check left and right
-        if (zeroCol > 0)
-        //  && this->curState->movement != 'R')
+        if (zeroCol > 0 && this->curState->movement != 'R')
         {
             // check left
 
@@ -341,8 +338,7 @@ class SSsearch
             this->checkExpandedAddToFrontier(swapTargetIndex, 'L', zeroIndex);
         }
 
-        if (zeroCol < this->dimension - 1)
-        //  && this->curState->movement != 'L')
+        if (zeroCol < this->dimension - 1 && this->curState->movement != 'L')
         {
             // check right
 
@@ -720,7 +716,7 @@ class SSsearch
 
             int zeroRow = zeroIndex / this->dimension;
 
-            cout << "perm: " << perm << "; zeroIndex: " << zeroIndex << "; zeroRow: " << zeroRow << "\n";
+            // cout << "perm: " << perm << "; zeroIndex: " << zeroIndex << "; zeroRow: " << zeroRow << "\n";
 
             if (zeroRow % 2 == 1)
             {
@@ -772,7 +768,8 @@ class SSsearch
             int asciiVal = (int)noZero[i];
             for (int j = i + 1; j < noZero.size(); j++)
             {
-                if (asciiVal > (int)noZero[j]){
+                if (asciiVal > (int)noZero[j])
+                {
                     inversionsCnt++;
                     // cout << "(" << noZero[i] << ", " << noZero[j] << "), ";
                 }
@@ -1461,7 +1458,7 @@ int main(int argc, char *argv[])
     // default variable initilizations
     string startState = "123450786";
     string goalState = "123456780";
-    string algo = "A*";
+    string algo = "IDA*";
     string heuristic = "mHD";
 
     // run 1
