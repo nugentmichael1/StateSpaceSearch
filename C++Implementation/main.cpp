@@ -672,16 +672,114 @@ class SSsearch
         // cout << "unique.size(): " << unique.size() << "\n";
 
         // verify every member of the arr was unique
-        if (unique.size() == candidateState.size())
-        {
-            cout << "State string of " << type << " is valid.\n";
-            return true;
-        }
-        else
+        if (unique.size() != candidateState.size())
         {
             cout << "Input values of " << type << " state are not unique.\n";
             return false;
         }
+
+        if (!this->determineSolvability(candidateState))
+        {
+            return false;
+        }
+
+        // string passed all 3 tests: sequential, uniqueness, and even inversions,
+        cout << "State string of " << type << " is valid.\n";
+        return true;
+    }
+
+    // check for solvability through inversions count
+    bool determineSolvability(string &perm)
+    {
+
+        // get count of inversions
+        int inversionCnt = this->countInversions(perm);
+
+        // check for odd or even dimension
+        if (this->dimension % 2 == 1)
+        {
+            // odd
+
+            // check if inversions count is even or odd
+            if (inversionCnt % 2 == 1)
+            {
+                // odd
+
+                // unsolvable
+                cout << "N: " << this->dimension << " (odd)\nInversion Count: " << inversionCnt << " (odd)\nPuzzle unsolvable.\n";
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            // even
+
+            // check which row blank tile (0) is in
+            int zeroIndex = perm.find('0');
+
+            int zeroRow = zeroIndex / this->dimension;
+
+            cout << "perm: " << perm << "; zeroIndex: " << zeroIndex << "; zeroRow: " << zeroRow << "\n";
+
+            if (zeroRow % 2 == 1)
+            {
+                // odd
+
+                // odd inversion count fails
+                if (inversionCnt % 2 == 1)
+                {
+                    cout << "N: " << this->dimension << " (even)\nInversion Count: " << inversionCnt << " (odd)\nBlank Tile's Row: " << zeroRow << " (odd)\nPuzzle unsolvable.\n";
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                // even
+
+                // even inversion count fails
+                if (inversionCnt % 2 == 0)
+                {
+                    cout << "N: " << this->dimension << " (even)\nInversion Count: " << inversionCnt << " (even)\nBlank Tile's Row: " << zeroRow << " (even)\nPuzzle unsolvable.\n";
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+
+    // count number of inversions
+    int countInversions(string &perm)
+    {
+        string noZero = "";
+        int i = 0;
+        // cout << "perm: " << perm << "\n";
+        while (perm[i] != '0')
+        {
+            // cout << perm[i];
+            noZero += perm[i++];
+        }
+        i++;
+        while (i < perm.size())
+        {
+            noZero += perm[i++];
+        }
+
+        int inversionsCnt = 0;
+        for (int i = 0; i < noZero.size(); i++)
+        {
+            int asciiVal = (int)noZero[i];
+            for (int j = i + 1; j < noZero.size(); j++)
+            {
+                if (asciiVal > (int)noZero[j]){
+                    inversionsCnt++;
+                    // cout << "(" << noZero[i] << ", " << noZero[j] << "), ";
+                }
+            }
+            // cout << "\n";
+        }
+        return inversionsCnt;
     }
 
     // called once an algorithm is run.  builds and returns move sequence from start to goal.
@@ -932,7 +1030,7 @@ class SSsearch
                 // explore next states.  possibly add them to frontier.
                 this->expand();
 
-                //debug: status
+                // debug: status
                 statesExpandedCntPerIteration++;
             }
             else if (this->curState->estTtlCost < fMin)
@@ -1378,7 +1476,7 @@ int main(int argc, char *argv[])
     else if (argc == 2)
     {
         string inputFile(argv[1]);
-        string outputFile("StateSpaceSearchResults.txt");
+        string outputFile("StateSpaceSearchResults.md");
 
         // create output file.  erases previous output files, too.
         ofstream oFile(outputFile);
@@ -1387,8 +1485,8 @@ int main(int argc, char *argv[])
         if (oFile.is_open())
         {
             // add header to file.
-            oFile << "Start State | Algorithm | Nodes Expanded | Clock Time | Solution\n";
-            oFile << ":-:|:-:|:-:|:-:|:-:\n";
+            oFile << "Start State | Algorithm | Nodes Expanded | Clock Time | Solution | Solution Length\n";
+            oFile << ":-:|:-:|:-:|:-:|:-:|:-:\n";
             oFile.close();
         }
         else
@@ -1501,7 +1599,7 @@ void printToFile(SSsearch &s, string &fileName)
     if (resultsFile.is_open())
     {
         // oFile << "Start State | Algorithm | Nodes Expanded | Clock Time | Solution\n";
-        resultsFile << s.getStart() << "|" << s.getAlgo() << "|" << s.getExpanded() << "|" << s.getClockTime() << " seconds|" << s.getSolution() << "\n";
+        resultsFile << s.getStart() << "|" << s.getAlgo() << "|" << s.getExpanded() << "|" << s.getClockTime() << " seconds|" << s.getSolution() << "|" << s.getSolution().size() << "\n";
 
         // github readme table format: goal | start | solution
         // resultsFile << goal << "|";
