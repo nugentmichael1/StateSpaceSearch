@@ -28,7 +28,7 @@ If no parameters are provided, a set of default states and algorithm are used, w
 #include <set>           //check uniqueness of characters of start and goal states
 #include <queue>         //bfs frontier, A* priority queue
 #include <stack>         //dfs, iddfs, IDA*
-#include <unordered_map> //pattern database heuristic
+#include <unordered_map> //pattern database heuristic, hash table for faster lookup on expanded and reached
 #include <chrono>        //clock time
 #include <time.h>        //random seed
 
@@ -214,7 +214,7 @@ class SSsearch
         int zeroIndex = this->curState->perm.find('0');
 
         // find coordinate of zero (blank) tile
-        int zeroRow = floor(zeroIndex / this->dimension);
+        int zeroRow = zeroIndex / this->dimension;
         int zeroCol = zeroIndex % this->dimension;
 
         // up & down
@@ -477,12 +477,30 @@ class SSsearch
         //     }
         // }
 
+        // string noZero = "";
+        // int i = 0;
+        // // cout << "perm: " << perm << "\n";
+        // while (perm[i] != '0')
+        // {
+        //     // cout << perm[i];
+        //     noZero += perm[i++];
+        // }
+        // i++;
+        // while (i < perm.size())
+        // {
+        //     noZero += perm[i++];
+        // }
+
         for (int row = 0, index = 0; row < this->dimension; row++)
         {
             for (int col = 0; col < this->dimension; col++)
             {
-                pair<int, int> coord = this->finalPosition[perm[index++]];
-                totalDistance += abs(row - coord.first) + abs(col - coord.second);
+                if (perm[index] != '0')
+                {
+                    pair<int, int> coord = this->finalPosition[perm[index]];
+                    totalDistance += abs(row - coord.first) + abs(col - coord.second);
+                }
+                index++;
             }
         }
 
@@ -574,8 +592,6 @@ class SSsearch
     // utility function to condense expand()
     void checkReachedAddToFrontier(int swapTargetIndex, char movement, int zeroIndex)
     {
-        // cout << "checkReachedAddToFrontier: ";
-        // this->curState->print();
 
         // create array copy of curState and perform swap
         string newStatePerm = this->curState->perm;
@@ -596,6 +612,24 @@ class SSsearch
             this->reached[newStatePerm] = s;
             this->f.push(s);
             // cout << "added state to frontier\n";
+        }
+
+        // compare current state's cost so far to reached's
+        else if (this->reached[newStatePerm]->costSoFar > this->curState->costSoFar + 1)
+        {
+            //delete previous state
+            delete this->reached[newStatePerm];
+
+            //recreate state with new parent, movement, and level parameters
+            state *s = new state(newStatePerm, this->curState, movement, this->curState->level + 1);
+
+            this->reached[newStatePerm] = s;
+            this->f.push(s);
+
+            // // update state with new parent and est. total cost
+            // this->reached[newStatePerm]->costSoFar = this->curState->costSoFar + 1;
+            // this->reached[newStatePerm]->parent = this->curState;
+            // this->reached
         }
     }
 
@@ -800,7 +834,7 @@ class SSsearch
         {
 
             // debug: helps identify sequence origin
-            // cur->print();
+            cur->print();
 
             // record movement used to get to this state from parent
             this->solution += cur->movement;
@@ -995,6 +1029,7 @@ class SSsearch
 
         // add header to new progress file
         progress << this->start->perm << "\n";
+        progress << this->start->estTtlCost << "\n";
 
         // close just to conserve resources.
         progress.close();
@@ -1011,14 +1046,12 @@ class SSsearch
                 return;
             }
 
-            // get heuristic: h(n)
-            int hn = this->heuristic(this->curState->perm);
-
-            // set state's g(n) based on level set in expand()
-            this->curState->costSoFar = this->curState->level;
-
-            // set estimated total cost: f(n) = g(n) + h(n)
-            this->curState->estTtlCost = hn + this->curState->costSoFar;
+            if (this->curState->perm == "63A41928057FDECB")
+            {
+                // debug
+                cout << "IDA*; fMax: " << fMax << "; ";
+                this->curState->print();
+            }
 
             // only expand states below the depth boundary
             if (this->curState->estTtlCost <= fMax)
@@ -1085,6 +1118,15 @@ class SSsearch
                 // get next state from priority queue
                 this->curState = this->f.pop();
             }
+
+            // get heuristic: h(n)
+            int hn = this->heuristic(this->curState->perm);
+
+            // set state's g(n) based on level set in expand()
+            this->curState->costSoFar = this->curState->level;
+
+            // set estimated total cost: f(n) = g(n) + h(n)
+            this->curState->estTtlCost = hn + this->curState->costSoFar;
         }
     }
 
