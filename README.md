@@ -70,7 +70,7 @@ Start State | Solution String | Algorithm
 "51246A38097BDEFC"|RULURRDDRD|Iterative Deepening DFS
 "12345678D9CFEBA0"|<ul><li>LURDLURDLLLURRDR</li><li>ULDLLURRDR</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A * w/ Out-Of-Place</li></ul>
 
-15 Puzzle - Difficult
+15 Puzzle - Difficult (This was with a broken IDA* -- not optimal)
 Start State | Algorithm | Nodes Expanded | Clock Time | Solution
 :-:|:-:|:-:|:-:|:-:
 71A92CE03DB4658F|IDA*|12522030|75.802 seconds|DDLULDRRULULLDRRDLUULURRRDLDRULULDDRUULDLDRRDLLURDRUULDRDR
@@ -78,5 +78,14 @@ Start State | Algorithm | Nodes Expanded | Clock Time | Solution
 39A1D0EC7BF86452|IDA*|202539032|1400.41 seconds|RRDLURULDRULLLDRDDRURDLUULDRRULLURDLDLUURDDRRUULDLDDLUUURDDDLUURDRRD
 EAB480FC19D56237|IDA*|fail|fail|fail
 7DB13C52F46E80A9|IDA*|50066037|326.987 seconds|RUULDLDRRULLUURRRDDLDRUULLDRRULLURRDLLLURDDLURDDRUULURDLDDLURDRR
+
+15 Puzzle - Difficult (Fixed the IDA* algorithm and all hard problems were solved.)
+Start State | Algorithm | Nodes Expanded | Clock Time | Solution | Solution Length
+:-:|:-:|:-:|:-:|:-:|:-:
+71A92CE03DB4658F|IDA*|1044282|6.326 seconds|LLLDDRURURDLDRULLULURRRDDLUULDDRUULDLDDRURULLDRRRD|50
+02348697DF5A1EBC|IDA*|281477|1.636 seconds|RDDRDLULDRUURDLULDDRRURULLULDDRRRULDRD|38
+39A1D0EC7BF86452|IDA*|44472096|249.976 seconds|DLUURRRDDLLDRRULULDDRUULURDLLURDDDLUURDDRUURULLDDRRULDDR|56
+EAB480FC19D56237|IDA*|26420007|215.994 seconds|LDRRUULLDDRDRURULLDRULDDLUURURDDLDRRUULDLUURDDDLUURDRD|54
+7DB13C52F46E80A9|IDA*|8370351|78.836 seconds|RULLDRRRULLUULDRRURDDLLLURDDRRULULULDRURRDLLLURRDLDDLURDRR|58
 
 You can work in groups, but each person needs to submit assignment, and assignment report should list all team member names.  Groups are generally limited to 5.
