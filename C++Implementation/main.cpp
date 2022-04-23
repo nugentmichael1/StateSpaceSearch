@@ -270,8 +270,9 @@ class SSsearch
         // increment expand count.  may be able to just take size of expanded vector at end.
         this->expandCount += 1;
 
-        cout << "expandAStar(): ";
-        this->curState->print();
+        // debug
+        //  cout << "expandAStar(): ";
+        //  this->curState->print();
 
         // premptively add curState to expanded tracker
         // this->expanded.emplace_back(this->curState);
@@ -617,10 +618,10 @@ class SSsearch
         // compare current state's cost so far to reached's
         else if (this->reached[newStatePerm]->costSoFar > this->curState->costSoFar + 1)
         {
-            //delete previous state
+            // delete previous state
             delete this->reached[newStatePerm];
 
-            //recreate state with new parent, movement, and level parameters
+            // recreate state with new parent, movement, and level parameters
             state *s = new state(newStatePerm, this->curState, movement, this->curState->level + 1);
 
             this->reached[newStatePerm] = s;
@@ -714,7 +715,7 @@ class SSsearch
         }
 
         // string passed all 3 tests: sequential, uniqueness, and even inversions,
-        cout << "State string of " << type << " is valid.\n";
+        cout << "Valid " << type << " state.\n";
         return true;
     }
 
@@ -736,7 +737,7 @@ class SSsearch
                 // odd
 
                 // unsolvable
-                cout << "N: " << this->dimension << " (odd)\nInversion Count: " << inversionCnt << " (odd)\nPuzzle unsolvable.\n";
+                cout << "N: " << this->dimension << " (odd); Inversion Count: " << inversionCnt << " (odd); Puzzle unsolvable.\n";
                 return false;
             }
             return true;
@@ -759,7 +760,7 @@ class SSsearch
                 // odd inversion count fails
                 if (inversionCnt % 2 == 1)
                 {
-                    cout << "N: " << this->dimension << " (even)\nInversion Count: " << inversionCnt << " (odd)\nBlank Tile's Row: " << zeroRow << " (odd)\nPuzzle unsolvable.\n";
+                    cout << "N: " << this->dimension << " (even); Inversion Count: " << inversionCnt << " (odd); Blank Tile's Row: " << zeroRow << " (odd); Puzzle unsolvable.\n";
                     return false;
                 }
                 return true;
@@ -771,7 +772,7 @@ class SSsearch
                 // even inversion count fails
                 if (inversionCnt % 2 == 0)
                 {
-                    cout << "N: " << this->dimension << " (even)\nInversion Count: " << inversionCnt << " (even)\nBlank Tile's Row: " << zeroRow << " (even)\nPuzzle unsolvable.\n";
+                    cout << "N: " << this->dimension << " (even); Inversion Count: " << inversionCnt << " (even); Blank Tile's Row: " << zeroRow << " (even); Puzzle unsolvable.\n";
                     return false;
                 }
                 return true;
@@ -817,7 +818,7 @@ class SSsearch
     void traceBack()
     {
 
-        this->curState->print();
+        // this->curState->print();
 
         // current state should be at goal state when this function is called
         this->solution = string(1, this->curState->movement);
@@ -834,7 +835,7 @@ class SSsearch
         {
 
             // debug: helps identify sequence origin
-            cur->print();
+            // cur->print();
 
             // record movement used to get to this state from parent
             this->solution += cur->movement;
@@ -1049,8 +1050,8 @@ class SSsearch
             if (this->curState->perm == "63A41928057FDECB")
             {
                 // debug
-                cout << "IDA*; fMax: " << fMax << "; ";
-                this->curState->print();
+                // cout << "IDA*; fMax: " << fMax << "; ";
+                // this->curState->print();
             }
 
             // only expand states below the depth boundary
@@ -1161,11 +1162,12 @@ class SSsearch
 
         this->finalPosition = fp;
 
-        for (int i = 0; i < this->goalPerm.size(); i++)
-        {
-            char cur = this->goalPerm[i];
-            cout << cur << ": " << this->finalPosition[cur].first << ", " << this->finalPosition[cur].second << "\n";
-        }
+        // debug: check matrix
+        // for (int i = 0; i < this->goalPerm.size(); i++)
+        // {
+        //     char cur = this->goalPerm[i];
+        //     cout << cur << ": " << this->finalPosition[cur].first << ", " << this->finalPosition[cur].second << "\n";
+        // }
     }
 
 public:
