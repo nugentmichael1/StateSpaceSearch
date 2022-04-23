@@ -9,7 +9,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${fileDirname}/${fileBasenameNoExtension}",
-        "args": ["Discussion.txt"],
+        "args": ["ProblemsList.txt"],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
         "environment": [],

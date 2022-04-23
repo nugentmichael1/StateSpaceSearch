@@ -5,13 +5,9 @@ Course Name: Artificial Intelligence
 Term: Spring 2022    
 Course Professor: David Ruby    
 College: CSU, Fresno    
-
-This is a C++ and JavaScript implementation of various state space search algorithms within a puzzle slider domain.  JavaScript is about tens times slower than C++, which means some of the algorithms like DFS will cause the browser to hang up with even minorly complex problems.  The advantage to JavaScript is the visualization of the puzzle slider, and should be used for easier functionality like solution tests.  C++ is better for the actual search algorithms.
-
-Below are the provided instructions of the assignment.    
-
-
-## Project Instructions
+Description: This is a C++ implementation of various state space search algorithms within a puzzle slider domain.  A JavaScript attempt was made, but proved too slow in the algorithms' infancy.  Perhaps now in maturity, it might handle them better since imlemented heuristics, and achieved optimality decreased run-time. Since JavaScript is 7-10 times slower than C++, its advantage is the visualization of and interaction with the puzzle slider, whereas C++ is better for difficult problems.    
+    
+## Provided Project Instructions
 In this assignment you will explore State-Space Search with the 8-Puzzle and 15-Puzzle.  You will need to implement and provide code for the following algorithms:
 
 - [x] Breadth-First Search    
@@ -35,51 +31,42 @@ In this assignment you will explore State-Space Search with the 8-Puzzle and 15-
 ### Provide link to Github repository with all code, and submit final report as PDF with requirements:
 
 - [x] Provide overview of your code.
-- [ ] Provide results for the following problems:
+- [x] Provide results for the following problems:
 
-8 Puzzle
-Start State | Solution String | Algorithm
---- | --- | --- 
-"160273485" | DDLUURDLLDRRUULDRD | A* w/ Out-Of-Place
-"462301587" | RDLURULLDRDLURULDRRULDDR | A* w/ Out-Of-Place
-"821574360"| <ul><li>LLURULDRDRULURDLLURDDRULLDRULDRR</li><li>LURULLDRULDDRURULDLURRDLURDD</li></ul> | <ul><li>?</li><li>A* w/ Out-Of-Place</li></ul>
-"840156372"|DLLURDLDRRULLURDDRUULDDR|A* w/ Out-Of-Place
-"530478126"|DLDLURDRUULDLURDDRULLDRR|A* w/ Out-Of-Place
-"068314257"|DRRULLDRDLURDRUULDLDRR|A* w/ Out-Of-Place
-"453207186"|RDLUULDDRUULDRDR|A* w/ Out-Of-Place
-"128307645"|LURDRULLDRDLURRDLURD|A* w/ Out-Of-Place
-"035684712"|RDLDRURDLULDRUULDDRURULDRD|A* w/ Out-Of-Place
-"684317025"|RURULLDDRURULLDDRRUULLDRDR|A* w/ Out-Of-Place
-"028514637"|DRRDLURULLDRDLURRDLUURDD|A* w/ Out-Of-Place
-"618273540"|LUULDRRULDDRUULLDDRULDRR|A* w/ Out-Of-Place
-"042385671"|DDRRULLURDDRUULDLURDRULDDR|A* w/ Out-Of-Place
-"420385716"|DLLURDDLURRULLDDRURD|A* w/ Out-Of-Place
-"054672813"|DRDLURURDLULDRRDLUURDLDR|A* w/ Out-Of-Place
-"314572680"|LULDRUULDRURDLULDRURDLDR|A* w/ Out-Of-Place
-"637218045"|RRUULDLURDRDLULDRRULDR|A* w/ Out-Of-Place
-"430621875"|DLURDLLDRULURRDDLURD|A* w/ Out-Of-Place
-"158274036"|URDRUULDDRULDLURDRUULDRD|A* w/ Out-Of-Place
-"130458726"|DLDRUULDDRULDR|A* w/ Out-Of-Place
+### 8 Puzzle
+Start State | Algorithm | Nodes Expanded | Clock Time | Solution | Solution Length
+:-:|:-:|:-:|:-:|:-:|:-:
+160273485|IDA*|735|0.006 seconds|DDLUURDLLDRRUULDRD|18
+462301587|IDA*|2139|0.008 seconds|RDLURULLDRDLURULDRRULDDR|24
+821574360|IDA*|9863|0.029 seconds|LURULLDRRDLLURDRULULDDRUURDD|28
+840156372|IDA*|1340|0.004 seconds|DLLURDLDRRULLURDDRUULDDR|24
+530478126|IDA*|4265|0.011 seconds|DLDLURDRUULLDRDRULULDDRR|24
+068314257|IDA*|276|0.001 seconds|DRRULLDRDLURDRUULDLDRR|22
+453207186|IDA*|161|0.001 seconds|RDLUULDDRUULDRDR|16
+128307645|IDA*|330|0.001 seconds|LURDRULLDRDLURRDLURD|20
+035684712|IDA*|3301|0.01 seconds|RDLDRURDLULDRUULDDRURULDRD|26
+684317025|IDA*|640|0.002 seconds|RURULLDRDLURRULLDRDRUULDDR|26
+028514637|IDA*|982|0.003 seconds|DRRDLURULLDRDLURRDLUURDD|24
+618273540|IDA*|1612|0.006 seconds|LUULDRRULDDRUULLDRDLURDR|24
+042385671|IDA*|2429|0.011 seconds|RRDLLDRRULLURRDLDLURULDDRR|26
+420385716|IDA*|736|0.002 seconds|DLLURDDLURRULLDDRURD|20
+054672813|IDA*|585|0.002 seconds|DRDLURURDDLUULDRURDLDR|22
+314572680|IDA*|1728|0.007 seconds|LULDRUULDRURDLULDRURDLDR|24
+637218045|IDA*|271|0.001 seconds|RRUULLDRRDLUULDDRRULDR|22
+430621875|IDA*|526|0.003 seconds|LDRULDLDRULURRDDLURD|20
+158274036|IDA*|2676|0.014 seconds|URDRUULDDRULDLURDRUULDRD|24
+130458726|IDA*|167|0.002 seconds|DLDRUULDRDLURD|14
 
-15 Puzzle - Easy   
-Start State | Solution String | Algorithm
---- | --- | ---
-"16235A749C08DEBF"|LUURRDDLDR|Iterative Deepening DFS
-"0634217859ABDEFC"|<ul><li>RDLURDLDRRRD</li><li>DRULDDRRRD</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A* w/ Out-Of-Place</li></ul>
-"012456379BC8DAEF"|RRDRDLLDRR|Iterative Deepening DFS
-"51246A38097BDEFC"|RULURRDDRD|Iterative Deepening DFS
-"12345678D9CFEBA0"|<ul><li>LURDLURDLLLURRDR</li><li>ULDLLURRDR</li></ul>|<ul><li>Iterative Deepening DFS</li><li>A * w/ Out-Of-Place</li></ul>
+### 15 Puzzle - Easy     
+Start State | Algorithm | Nodes Expanded | Clock Time | Solution | Solution Length
+:-:|:-:|:-:|:-:|:-:|:-: 
+16235A749C08DEBF|IDA*|10|0 seconds|LUURRDDLDR|10
+0634217859ABDEFC|IDA*|10|0 seconds|DRULDDRRRD|10
+012456379BC8DAEF|IDA*|10|0 seconds|RRDRDLLDRR|10
+51246A38097BDEFC|IDA*|10|0 seconds|RULURRDDRD|10
+12345678D9CFEBA0|IDA*|11|0 seconds|ULDLLURRDR|10
 
-15 Puzzle - Difficult (This was with a broken IDA* -- not optimal)
-Start State | Algorithm | Nodes Expanded | Clock Time | Solution
-:-:|:-:|:-:|:-:|:-:
-71A92CE03DB4658F|IDA*|12522030|75.802 seconds|DDLULDRRULULLDRRDLUULURRRDLDRULULDDRUULDLDRRDLLURDRUULDRDR
-02348697DF5A1EBC|IDA*|5121410|37.951 seconds|RRDLLDDRRRUULLLDRRRULDRULULLDRDLURRDLURRDLDRULDLLURRDR
-39A1D0EC7BF86452|IDA*|202539032|1400.41 seconds|RRDLURULDRULLLDRDDRURDLUULDRRULLURDLDLUURDDRRUULDLDDLUUURDDDLUURDRRD
-EAB480FC19D56237|IDA*|fail|fail|fail
-7DB13C52F46E80A9|IDA*|50066037|326.987 seconds|RUULDLDRRULLUURRRDDLDRUULLDRRULLURRDLLLURDDLURDDRUULURDLDDLURDRR
-
-15 Puzzle - Difficult (Fixed the IDA* algorithm and all hard problems were solved.)
+### 15 Puzzle - Difficult    
 Start State | Algorithm | Nodes Expanded | Clock Time | Solution | Solution Length
 :-:|:-:|:-:|:-:|:-:|:-:
 71A92CE03DB4658F|IDA*|1044282|6.326 seconds|LLLDDRURURDLDRULLULURRRDDLUULDDRUULDLDDRURULLDRRRD|50
