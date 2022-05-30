@@ -1,5 +1,5 @@
 
-const Options = ({ perm, goalState, setPerm, setGoalState, run }) => {
+const Options = ({ perm, goalState, setPerm, setGoalState, solve }) => {
 
 
     return (
@@ -16,7 +16,7 @@ const Options = ({ perm, goalState, setPerm, setGoalState, run }) => {
                                 onChange={() => setPerm(document.getElementById('initialState').value)}></input>
                         </td>
                         <td rowSpan={2}>
-                            <input type="button" onClick={run} value="Run"></input>
+                            <input type="button" onClick={solve} value="Solve"></input>
                         </td>
                     </tr>
                     <tr>

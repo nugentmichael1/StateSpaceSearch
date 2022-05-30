@@ -34,7 +34,7 @@ function App() {
     }
   }
 
-  function run() {
+  function solve() {
     let s = new search(perm, goalState);
     setENodes(s.expandCount);
     setSolution(s.solution);
@@ -43,7 +43,7 @@ function App() {
   return (
     <>
       <h1>State Space Search</h1>
-      <Options perm={perm} goalState={goalState} setPerm={setPerm} setGoalState={setGoalState} run={run} />
+      <Options perm={perm} goalState={goalState} setPerm={setPerm} setGoalState={setGoalState} solve={solve} />
       <Puzzle perm={perm} setPerm={setPerm} swap={swap} />
       <Solution solution={solution} eNodes={eNodes} />
     </>
