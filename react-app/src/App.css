@@ -1,37 +1,77 @@
-*{
+html {
   text-align: center;
 }
-table.Puzzle{
-  margin: auto auto;
+
+table.Puzzle {
+  margin: 2vh 2vw;
+  /* border-collapse: collapse; */
+  text-align: center;
+  color: #011222;
+  border: 1px solid rgb(42, 110, 36);
+  border-spacing: 1px;
+
+}
+
+.Puzzle caption {
+  border: 1px solid rgb(42, 110, 36);
+}
+
+.PuzzleBody {
   font-size: 400%;
-  border-collapse: collapse;
-  text-align: center;
-  background-color: #1b4470;
 }
-.Puzzle td{
+
+.Puzzle td {
   text-align: center;
-  border: 1px solid;
+  /* border: 1px solid #011222; */
   width: 15vw;
   height: 15vh;
 }
 
-table.options{
-  margin: auto auto;
-}
-
-table{
-  margin: auto auto;
+table.options {
+  margin: 2vh 2vw;
+  color: rgb(42, 110, 36);
+  border: 1px solid rgb(42, 110, 36);
   border-collapse: collapse;
 }
 
-body{
-  background-color: #003366;
+table.options caption {
+  border: 1px solid rgb(42, 110, 36);
+  text-align: center;
+  padding: 0;
+  margin: 0;
 }
 
-tr.algoOption{
-  background-color: #2e5a88;
+table {
+  margin: auto auto;
+  display: inline-table;
 }
 
-table.options{
-  background-color: cyan;
+body {
+  background-color: #011222;
+  color: rgb(42, 110, 36);
+}
+
+tr.algoOption {
+  background-color: #041b33;
+}
+
+h1 {
+  font-size: 400%;
+  color: rgb(42, 110, 36);
+  margin: 2vh 1vw;
+  padding: 0;
+}
+
+h2 {
+  /* padding: 0 1vw; */
+  margin: 0;
+  color: rgb(42, 110, 36);
+}
+
+td.blank {
+  background-color: inherit;
+}
+
+td.tile {
+  background-color: rgb(42, 110, 36);
 }

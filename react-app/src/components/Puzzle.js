@@ -7,7 +7,8 @@ const PuzzleRow = ({ perm, row, swap }) => {
     for (let i = 0; i < perm.length; i++) {
         let number = (perm[i] !== "0") ? perm[i] : "";
         let id = row + "-" + i;
-        tds.push(<td key={i} id={id} onClick={() => swap(number)}>{number}</td>);
+        const blankXorTile = number === "" ? "blank" : "tile"
+        tds.push(<td key={i} id={id} className={blankXorTile} onClick={() => swap(number)}>{number}</td>);
     }
 
     return (
@@ -37,7 +38,12 @@ const Puzzle = ({ perm, swap }) => {
         <>
             {/* Puzzle size: {pDimension} x {pDimension} */}
             <table className="Puzzle">
-                <tbody>
+                <caption>
+                    <h2>
+                        Puzzle Slider
+                    </h2>
+                </caption>
+                <tbody className="PuzzleBody">
                     {board}
                 </tbody>
             </table>

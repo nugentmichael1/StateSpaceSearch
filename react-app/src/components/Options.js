@@ -5,7 +5,11 @@ const Options = ({ perm, goalState, setPerm, setGoalState, solve }) => {
     return (
         <>
             <table className="options">
-                <caption>Options</caption>
+                <caption>
+                    <h2>
+                        Options
+                    </h2>
+                </caption>
                 <tbody>
                     <tr>
                         <td>
