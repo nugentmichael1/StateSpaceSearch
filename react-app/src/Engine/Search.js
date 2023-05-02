@@ -78,7 +78,7 @@ class search {
         //case where start state is goal state
         if (!cur) return solution.join("");
 
-        while (cur.parent != undefined) {
+        while (cur.parent !== undefined) {
             // console.log(cur.movement)
             solution.push(cur.movement);
             cur = cur.parent;
