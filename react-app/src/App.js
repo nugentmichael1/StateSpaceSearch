@@ -2,7 +2,7 @@ import './App.css';
 import { Puzzle } from './components/Puzzle';
 import Options from './components/Options';
 import { useState } from 'react';
-import { legalMove } from './Engine/Mechanics'
+import { legalMoveUser, legalSolutionMove, makeSolutionSwap } from './Engine/Mechanics'
 import Solution from './components/Solution';
 import search from './Engine/Search'
 
@@ -13,23 +13,21 @@ function App() {
 
   const [goalState, setGoalState] = useState(perm);
 
-  const [solution, setSolution] = useState();
+  const [solution, setSolution] = useState("");
 
   const [eNodes, setENodes] = useState();
 
   const swap = (candidate) => {
 
-    // console.log(perm);
-
     let zeroIndex = perm.indexOf(0);
     let candidateIndex = perm.indexOf(candidate);
 
-    if (legalMove(zeroIndex, candidateIndex, Math.sqrt(perm.length))) {
+    if (legalMoveUser(zeroIndex, candidateIndex, Math.sqrt(perm.length))) {
       let tmp = [...perm];
       tmp[zeroIndex] = perm[candidateIndex];
       tmp[candidateIndex] = 0;
-      // console.log("swap",tmp);
-      // console.log("swapPerm",perm)
+
+      //convert array to string
       setPerm(tmp.join(""));
     }
   }
@@ -40,12 +38,43 @@ function App() {
     setSolution(s.solution);
   }
 
+  function walkthrough(solutionString) {
+
+    let permutation = perm, i = 0;
+
+    const interval = setInterval(() => {
+
+      //Guard
+      if (i === solutionString.length) {
+        clearInterval(interval)
+        return
+      }
+
+      if (legalSolutionMove(solutionString[i], permutation)) {
+
+        const newPermutation = makeSolutionSwap(solutionString[i], permutation)
+
+        permutation = newPermutation
+
+        setPerm(newPermutation)
+      }
+      else {
+        console.log("Illegal move made in walkthrough.", solutionString[i])
+        clearInterval(interval)
+        return
+      }
+
+      i++;
+
+    }, 500)
+  }
+
   return (
     <>
       <h1>State Space Search</h1>
       <Options perm={perm} goalState={goalState} setPerm={setPerm} setGoalState={setGoalState} solve={solve} />
       <Puzzle perm={perm} setPerm={setPerm} swap={swap} />
-      <Solution solution={solution} eNodes={eNodes} />
+      <Solution solution={solution} setSolution={setSolution} walkthrough={walkthrough} eNodes={eNodes} />
     </>
   );
 }

@@ -1,19 +1,27 @@
-const Solution = ({solution, eNodes}) => {
+const Solution = ({ solution, setSolution, walkthrough, eNodes }) => {
+
   return (
     <>
-    <table>
+      <table>
         <caption>Solution</caption>
         <tbody>
-            <tr>
-                <td>Solution String:</td>
-                <td>{solution}</td>
-            </tr>
-            <tr>
-                <td>Expanded Nodes:</td>
-                <td>{eNodes}</td>
-            </tr>
+          <tr>
+            <td>
+              <label htmlFor='solutionStringWalkthrough'>
+                Solution String:
+              </label>
+            </td>
+            <td>
+              <input type='text' id='solutionStringWalkthrough' value={solution} onChange={(e) => { setSolution(e.target.value) }} />
+            </td>
+            <td><input type="button" value={"Go"} onClick={() => { walkthrough(solution) }} /></td>
+          </tr>
+          <tr>
+            <td>Expanded Nodes:</td>
+            <td>{eNodes}</td>
+          </tr>
         </tbody>
-    </table>
+      </table >
     </>
   )
 }
