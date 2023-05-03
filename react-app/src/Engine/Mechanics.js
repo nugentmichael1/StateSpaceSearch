@@ -95,6 +95,51 @@ function makeSolutionSwap(direction, permutation) {
 }
 
 
+function walkthrough(solutionString, permutation, setPermutation) {
+
+    let i = 0;
+
+    const interval = setInterval(() => {
+
+        //Guard: reached end of solution string
+        if (i === solutionString.length) {
+            clearInterval(interval)
+            return
+        }
+
+        if (legalSolutionMove(solutionString[i], permutation)) {
+
+            const newPermutation = makeSolutionSwap(solutionString[i], permutation)
+
+            permutation = newPermutation
+
+            setPermutation(newPermutation)
+        }
+        else {
+            console.log("Illegal move made in walkthrough.", solutionString[i])
+            clearInterval(interval)
+            return
+        }
+
+        i++;
+
+    }, 500)
+}
+
+const swap = (candidate, permutation, setPermutation) => {
+
+    let zeroIndex = permutation.indexOf(0);
+    let candidateIndex = permutation.indexOf(candidate);
+
+    if (legalMoveUser(zeroIndex, candidateIndex, Math.sqrt(permutation.length))) {
+        let tmp = [...permutation];
+        tmp[zeroIndex] = permutation[candidateIndex];
+        tmp[candidateIndex] = 0;
+
+        //convert array to string
+        setPermutation(tmp.join(""));
+    }
+}
 
 
-export { legalMoveUser, legalSolutionMove, makeSolutionSwap };
+export { legalMoveUser, walkthrough, swap };

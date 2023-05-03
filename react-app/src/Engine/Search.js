@@ -19,7 +19,7 @@ class search {
     constructor(start, goal) {
 
         //create state object from start state permutation
-        this.start = new state(start, undefined, undefined, 0);
+        this.start = new state(start, null, null, 0);
 
         //set current state to start state
         this.curState = this.start;
@@ -59,26 +59,32 @@ class search {
         else if (algo === "dfs") this.dfs();
         else if (algo === "itDdfs") this.itDdfs();
 
-        console.log("Reached goal state: ", this.curState);
+        console.log("Reached Goal State: ", this.curState);
 
-        console.log("expandedCount", this.expandCount);
+        console.log("Expanded Count", this.expandCount);
         this.traceBack();
         console.log(this.solution);
-        console.log("frontierSize", this.frontier.length)
-        console.log("reached size", this.reached.length);
+        console.log("Frontier Size", this.frontier.length)
+        console.log("Reached Size", this.reached.length);
 
     }
 
     traceBack() {
-        //current state should be at goal state when this function is called
 
+        //Guard: Starting state is goal state - no solution required.
+        if (this.curState.movement === null) {
+            this.solution = ""
+            return
+        }
+
+        //current state should be at goal state when this function is called
         let solution = [this.curState.movement];
         let cur = this.curState.parent;
 
         //case where start state is goal state
         if (!cur) return solution.join("");
 
-        while (cur.parent !== undefined) {
+        while (cur.parent !== null) {
             // console.log(cur.movement)
             solution.push(cur.movement);
             cur = cur.parent;
