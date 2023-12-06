@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { walkthrough, swap } from './Engine/Mechanics'
 import Solution from './components/Solution';
 import search from './Engine/Search'
+import Instructions from './components/Instructions';
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
   return (
     <>
       <h1>State Space Search</h1>
+      <Instructions />
       <Options perm={perm} goalState={goalState} setPerm={setPerm} setGoalState={setGoalState} solve={solve} />
       <Puzzle perm={perm} setPerm={setPerm} swap={swapWrapper} />
       <Solution solution={solution} setSolution={setSolution} walkthrough={walkthroughWrapper} eNodes={eNodes} />
